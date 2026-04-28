@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Charted — Nursing Shift Charting
 
-## Getting Started
+Quick, room-based nursing shift documentation. No patient details stored — just room numbers and actions.
 
-First, run the development server:
+## Stack
+- **Frontend:** Next.js 15 (App Router) + React
+- **Backend:** Convex
+- **Auth:** Clerk
+- **Styling:** Tailwind CSS + shadcn/ui
+
+## Setup
+
+### 1. Environment Variables
+
+Add these to `.env.local`:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clerk (from https://dashboard.clerk.com)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+
+# Convex (already set by `npx convex init`)
+NEXT_PUBLIC_CONVEX_URL=http://127.0.0.1:3210
+CONVEX_DEPLOYMENT=...
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Clerk Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Create a Clerk app at https://dashboard.clerk.com
+2. Enable email/password and/or Google sign-in
+3. Copy the API keys to `.env.local`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Run locally
 
-## Learn More
+```bash
+# Terminal 1: Convex backend
+npx convex dev
 
-To learn more about Next.js, take a look at the following resources:
+# Terminal 2: Next.js frontend
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open http://localhost:3000
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Features (Phase 1 MVP)
+- ✅ Clerk auth
+- ✅ Quick entry: "Room 101, inserted IV on left cephalic vein"
+- ✅ Auto-detects room number from input
+- ✅ Day/Night shift toggle
+- ✅ Live timeline grouped by room
+- ✅ End shift summary with handover notes
+- ✅ Shift history
 
-## Deploy on Vercel
+## Convex Schema
+```
+users: clerkId, name, credentials
+entries: userId, room, description, timestamp, shiftDate, shiftType
+shift_summaries: userId, shiftDate, shiftType, entryCount, roomCount, handoverNotes, endedAt
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Convex
+```bash
+npx convex deploy
+```
+
+### Netlify
+Connect repo to Netlify. Set env vars in Netlify dashboard.
+See `netlify.toml` for build config.
