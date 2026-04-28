@@ -1,10 +1,10 @@
 "use client";
 
-import { useUser, useAuth, SignIn, SignInButton, UserButton } from "@clerk/nextjs";
+import { useUser, useAuth, SignInButton, UserButton } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "../components/ui/button";
 
 type Entry = {
@@ -17,16 +17,33 @@ type Entry = {
   shiftType: "day" | "night";
 };
 
+/**
+ * Auto-detect shift from current time.
+ * Day: 07:00–18:59, Night: 19:00–06:59
+ * Night shift date = the calendar day the shift STARTED.
+ */
+function detectShift(date: Date) {
+  const hour = date.getHours();
+  const shiftType: "day" | "night" = hour >= 7 && hour < 19 ? "day" : "night";
+  // For night shift before 7am, the shift started the previous day
+  const shiftDate =
+    shiftType === "night" && hour < 7
+      ? new Date(date.getTime() - 24 * 60 * 60 * 1000).toLocaleDateString("en-CA")
+      : date.toLocaleDateString("en-CA");
+  return { shiftType, shiftDate };
+}
+
 function Dashboard() {
   const { user } = useUser();
   const upsertUser = useMutation(api.entries.upsertUser);
   const addEntry = useMutation(api.entries.addEntry);
   const endShift = useMutation(api.entries.endShift);
 
-  const [shiftType, setShiftType] = useState<"day" | "night">("day");
   const [entryInput, setEntryInput] = useState("");
   const [showEndShift, setShowEndShift] = useState(false);
   const [handoverNotes, setHandoverNotes] = useState("");
+
+  const { shiftType, shiftDate } = useMemo(() => detectShift(new Date()), []);
 
   // Sync Clerk user to Convex
   useEffect(() => {
@@ -39,24 +56,18 @@ function Dashboard() {
     }
   }, [user, upsertUser]);
 
-  // Get today's date for shift
-  const today = new Date().toLocaleDateString("en-CA", {
-    timeZone: "America/New_York",
-  });
-
   const currentUser = useQuery(
     api.entries.getCurrentUser,
     user ? { clerkId: user.id } : "skip"
   );
   const entries = useQuery(
     api.entries.getTodayEntries,
-    currentUser ? { userId: currentUser._id, shiftDate: today } : "skip"
+    currentUser ? { userId: currentUser._id, shiftDate } : "skip"
   );
 
   const handleAddEntry = async () => {
     if (!entryInput.trim() || !currentUser) return;
 
-    // Parse room number from input: "Room 101, ..." or "101, ..." or "ROOM 101 ..."
     const roomMatch = entryInput.match(/(?:room\s*)?(\d+[a-z]?)\b/i);
     const room = roomMatch ? roomMatch[1].toUpperCase() : "UNKNOWN";
     const description = roomMatch
@@ -77,7 +88,7 @@ function Dashboard() {
     const uniqueRooms = new Set(entries?.map((e) => e.room)).size;
     await endShift({
       userId: currentUser._id,
-      shiftDate: today,
+      shiftDate,
       shiftType,
       entryCount: entries?.length || 0,
       roomCount: uniqueRooms,
@@ -87,7 +98,6 @@ function Dashboard() {
     setHandoverNotes("");
   };
 
-  // Group entries by room
   const groupedByRoom = entries?.reduce(
     (acc, entry) => {
       if (!acc[entry.room]) acc[entry.room] = [];
@@ -96,6 +106,8 @@ function Dashboard() {
     },
     {} as Record<string, Entry[]>
   ) || {};
+
+  const shiftLabel = shiftType === "day" ? "☀️ Day Shift" : "🌙 Night Shift";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -108,35 +120,11 @@ function Dashboard() {
                 weekday: "long",
                 month: "short",
                 day: "numeric",
-              })}
+              })}{" "}
+              · {shiftLabel}
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            {/* Shift Toggle */}
-            <div className="flex bg-gray-100 rounded-lg p-0.5">
-              <button
-                onClick={() => setShiftType("day")}
-                className={`px-3 py-1 text-sm rounded-md transition ${
-                  shiftType === "day"
-                    ? "bg-white shadow text-slate-800"
-                    : "text-slate-500"
-                }`}
-              >
-                Day
-              </button>
-              <button
-                onClick={() => setShiftType("night")}
-                className={`px-3 py-1 text-sm rounded-md transition ${
-                  shiftType === "night"
-                    ? "bg-white shadow text-slate-800"
-                    : "text-slate-500"
-                }`}
-              >
-                Night
-              </button>
-            </div>
-            <UserButton />
-          </div>
+          <UserButton />
         </div>
       </header>
 
@@ -162,15 +150,12 @@ function Dashboard() {
                 Add
               </Button>
             </div>
-            {/* Quick presets */}
             <div className="flex flex-wrap gap-1.5 mt-3">
               {["IV inserted", "Med given", "Vitals taken", "Wound care"].map(
                 (preset) => (
                   <button
                     key={preset}
-                    onClick={() => {
-                      setEntryInput(preset);
-                    }}
+                    onClick={() => setEntryInput(preset)}
                     className="px-2.5 py-1 text-xs bg-blue-50 text-blue-700 rounded-full hover:bg-blue-100 transition"
                   >
                     {preset}
@@ -186,9 +171,7 @@ function Dashboard() {
           <section className="py-2">
             <div className="flex gap-4 text-sm text-slate-500">
               <span>{entries.length} entries</span>
-              <span>
-                {Object.keys(groupedByRoom).length} rooms
-              </span>
+              <span>{Object.keys(groupedByRoom).length} rooms</span>
             </div>
           </section>
         )}
@@ -310,7 +293,7 @@ export default function Home() {
           </p>
           <SignInButton mode="modal">
             <Button size="lg" className="w-full">
-              Sign In with Clerk
+              Sign In
             </Button>
           </SignInButton>
         </div>
