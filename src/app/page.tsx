@@ -20,7 +20,7 @@ function Dashboard() {
   const pastShifts = useQuery(api.entries.getPastShifts);
   const addEntry = useMutation(api.entries.addEntry);
   const deleteEntry = useMutation(api.entries.deleteEntry);
-  const initializeSettings = useMutation(api.entries.initializeSettings);
+  const initializeSettings = useMutation(api.entries.initializeUserSettings);
   const endShift = useMutation(api.entries.endShift);
 
   // Navigation state
