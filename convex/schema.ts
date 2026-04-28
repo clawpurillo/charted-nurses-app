@@ -1,31 +1,31 @@
+import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  users: defineTable({
-    clerkId: v.string(),
-    name: v.string(),
-    credentials: v.optional(v.string()), // e.g. "RN", "LPN"
-  }).index("by_clerkId", ["clerkId"]),
+  // Auth tables (users, sessions, authRefreshTokens, authVerifications, authVerificationCodes)
+  // - users/sessions/refreshTokens: essential for password auth
+  // - verifications/verificationCodes: for email verification (not used now, but harmless)
+  ...authTables,
+
+  userSettings: defineTable({
+    userId: v.id("users"),
+    plan: v.union(v.literal("free"), v.literal("basic"), v.literal("pro")),
+    voiceEntriesUsedToday: v.optional(v.number()),
+    lastResetDate: v.optional(v.string()),
+  }).index("by_user", ["userId"]),
 
   entries: defineTable({
     userId: v.id("users"),
     room: v.string(),
     description: v.string(),
-    timestamp: v.number(), // ms epoch
-    shiftDate: v.string(), // "YYYY-MM-DD"
+    entryType: v.union(v.literal("text"), v.literal("voice")),
+    fdarCategory: v.optional(v.union(v.literal("focus"), v.literal("data"), v.literal("action"), v.literal("response"))),
+    timestamp: v.number(),
+    shiftDate: v.string(),
     shiftType: v.union(v.literal("day"), v.literal("night")),
   })
     .index("by_user_and_shiftDate", ["userId", "shiftDate"])
-    .index("by_user_and_room", ["userId", "room"]),
-
-  shift_summaries: defineTable({
-    userId: v.id("users"),
-    shiftDate: v.string(),
-    shiftType: v.union(v.literal("day"), v.literal("night")),
-    entryCount: v.number(),
-    roomCount: v.number(),
-    handoverNotes: v.optional(v.string()),
-    endedAt: v.number(),
-  }).index("by_user_and_shiftDate", ["userId", "shiftDate"]),
+    .index("by_user_and_room", ["userId", "room"])
+    .index("by_user_and_timestamp", ["userId", "timestamp"]),
 });
