@@ -176,6 +176,60 @@ function Dashboard() {
     return acc;
   }, {} as Record<string, typeof currentEntries>) || {};
 
+  // View mode toggle
+  const [timelineView, setTimelineView] = useState<"timeline" | "rooms">("timeline");
+
+  // Timeline entries (chronological)
+  const sortedEntries = currentEntries
+    ? [...currentEntries].sort((a, b) => a.timestamp - b.timestamp)
+    : [];
+
+  // Get time labels for timeline (group by hour)
+  const getTimeLabel = (timestamp: number, prevTimestamp?: number): string | null => {
+    const time = new Date(timestamp);
+    if (!prevTimestamp) {
+      return time.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    }
+    const prevHour = new Date(prevTimestamp).getHours();
+    const currHour = time.getHours();
+    if (currHour !== prevHour) {
+      return time.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    }
+    return null;
+  };
+
+  const fdarColors: Record<string, { bg: string; text: string; ring: string; dot: string }> = {
+    focus: { bg: "bg-amber-50", text: "text-amber-700", ring: "ring-amber-200", dot: "bg-amber-500" },
+    data: { bg: "bg-blue-50", text: "text-blue-700", ring: "ring-blue-200", dot: "bg-blue-500" },
+    action: { bg: "bg-green-50", text: "text-green-700", ring: "ring-green-200", dot: "bg-green-500" },
+    response: { bg: "bg-purple-50", text: "text-purple-700", ring: "ring-purple-200", dot: "bg-purple-500" },
+  };
+
+  const fdarLabels: Record<string, string> = {
+    focus: "F",
+    data: "D",
+    action: "A",
+    response: "R",
+  };
+
+  const getRoomColor = (room: string): string => {
+    const colors = [
+      "bg-slate-100 text-slate-700 ring-slate-200",
+      "bg-blue-50 text-blue-700 ring-blue-200",
+      "bg-emerald-50 text-emerald-700 ring-emerald-200",
+      "bg-violet-50 text-violet-700 ring-violet-200",
+      "bg-rose-50 text-rose-700 ring-rose-200",
+      "bg-amber-50 text-amber-700 ring-amber-200",
+      "bg-cyan-50 text-cyan-700 ring-cyan-200",
+      "bg-orange-50 text-orange-700 ring-orange-200",
+    ];
+    let hash = 0;
+    for (let i = 0; i < room.length; i++) {
+      hash = room.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
+
   const now = new Date();
   const currentShiftLabel = now.getHours() >= 7 && now.getHours() < 19 ? "Day Shift" : "Night Shift";
   const currentShiftDate = now.toLocaleDateString("en-CA");
@@ -462,18 +516,159 @@ ${lines.join("\n")}`;
                 </div>
               )}
 
-              {/* Timeline */}
-              {entries && entries.length > 0 ? (
-                <section className="space-y-3 mb-4">
+              {/* View Toggle */}
+              {entries && entries.length > 0 && (
+                <div className="flex gap-1 mb-3 bg-white rounded-lg p-1 border border-slate-200 w-fit">
+                  <button
+                    onClick={() => setTimelineView("timeline")}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
+                      timelineView === "timeline"
+                        ? "bg-slate-900 text-white"
+                        : "text-slate-600 hover:bg-slate-100"
+                    }`}
+                  >
+                    ⏱ Timeline
+                  </button>
+                  <button
+                    onClick={() => setTimelineView("rooms")}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition ${
+                      timelineView === "rooms"
+                        ? "bg-slate-900 text-white"
+                        : "text-slate-600 hover:bg-slate-100"
+                    }`}
+                  >
+                    🚪 By Room
+                  </button>
+                </div>
+              )}
+
+              {/* Timeline View */}
+              {timelineView === "timeline" && (
+                <>
+                  {sortedEntries.length > 0 ? (
+                    <section className="mb-4">
+                      <div className="relative">
+                        {/* Timeline line */}
+                        <div className="absolute left-5 top-0 bottom-0 w-px bg-gradient-to-b from-slate-300 via-slate-200 to-slate-100" />
+
+                        {/* Shift start marker */}
+                        <div className="relative flex items-start gap-3 mb-4 pl-0">
+                          <div className="relative z-10 w-10 flex justify-center">
+                            <div className="w-3 h-3 rounded-full bg-slate-900 ring-4 ring-slate-50" />
+                          </div>
+                          <div className="pt-0.5">
+                            <p className="text-xs font-medium text-slate-500">Shift started</p>
+                            <p className="text-[10px] text-slate-400">
+                              {sortedEntries[0] && new Date(sortedEntries[0].timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Entries */}
+                        {sortedEntries.map((entry, idx) => {
+                          const prevEntry = idx > 0 ? sortedEntries[idx - 1] : null;
+                          const timeLabel = getTimeLabel(entry.timestamp, prevEntry?.timestamp);
+                          const fdar = entry.fdarCategory ? fdarColors[entry.fdarCategory] : null;
+                          const roomColor = getRoomColor(entry.room);
+
+                          return (
+                            <div key={entry._id} className="relative flex items-start gap-3 mb-3 group">
+                              {/* Time label */}
+                              {timeLabel && (
+                                <div className="absolute -left-16 top-1 hidden md:block">
+                                  <span className="text-[10px] font-medium text-slate-400 tabular-nums">{timeLabel}</span>
+                                </div>
+                              )}
+
+                              {/* Timeline dot */}
+                              <div className="relative z-10 w-10 flex justify-center shrink-0">
+                                <div className={`w-2.5 h-2.5 rounded-full ring-4 ring-slate-50 transition-all duration-200 ${
+                                  fdar ? fdar.dot : "bg-slate-400"
+                                } group-hover:w-3 group-hover:h-3`} />
+                              </div>
+
+                              {/* Entry card */}
+                              <div className={`flex-1 rounded-xl border p-3 transition-all duration-200 hover:shadow-md hover:scale-[1.01] cursor-default ${
+                                fdar ? `${fdar.bg} ${fdar.ring} ring-1` : "bg-white border-slate-200"
+                              }`}>
+                                <div className="flex items-start gap-2">
+                                  {/* Room badge */}
+                                  <span className={`px-2 py-0.5 rounded-md text-xs font-semibold ring-1 shrink-0 ${roomColor}`}>
+                                    {entry.room}
+                                  </span>
+
+                                  {/* FDAR badge */}
+                                  {entry.fdarCategory && (
+                                    <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${
+                                      fdar?.text || "text-slate-600"
+                                    }`}>
+                                      {fdarLabels[entry.fdarCategory]}
+                                    </span>
+                                  )}
+
+                                  {/* Voice icon */}
+                                  {entry.entryType === "voice" && (
+                                    <span className="text-xs">🎤</span>
+                                  )}
+
+                                  {/* Mobile time */}
+                                  <span className="text-[10px] text-slate-400 md:hidden ml-auto shrink-0">
+                                    {new Date(entry.timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                                  </span>
+                                </div>
+
+                                <p className={`text-sm mt-2 leading-relaxed ${fdar ? fdar.text : "text-slate-700"}`}>
+                                  {entry.description}
+                                </p>
+
+                                {/* Delete button */}
+                                <button
+                                  onClick={() => handleDeleteEntry(entry._id)}
+                                  className="mt-2 text-[10px] text-slate-400 hover:text-red-500 transition opacity-0 group-hover:opacity-100"
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        {/* Shift end marker */}
+                        <div className="relative flex items-start gap-3 mt-4 pl-0">
+                          <div className="relative z-10 w-10 flex justify-center">
+                            <div className="w-3 h-3 rounded-full bg-slate-300 ring-4 ring-slate-50" />
+                          </div>
+                          <div className="pt-0.5">
+                            <p className="text-xs font-medium text-slate-400">Shift ended</p>
+                            <p className="text-[10px] text-slate-400">
+                              {sortedEntries[sortedEntries.length - 1] && new Date(sortedEntries[sortedEntries.length - 1].timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                  ) : (
+                    <section className="py-8 text-center text-slate-400 mb-4">
+                      <p className="text-2xl mb-1">📋</p>
+                      <p className="text-sm">No entries yet</p>
+                      <p className="text-xs mt-1">Start charting above</p>
+                    </section>
+                  )}
+                </>
+              )}
+
+              {/* Room Grouped View */}
+              {timelineView === "rooms" && (
+                <>
                   {Object.entries(groupedByRoom).map(([room, roomEntries]) => (
-                    <div key={room} className="bg-white rounded-lg border border-slate-200">
+                    <div key={room} className="bg-white rounded-lg border border-slate-200 mb-3">
                       <div className="px-3 py-2 border-b border-slate-100 bg-slate-50">
                         <span className="text-sm font-medium text-slate-800">Room {room}</span>
                         <span className="text-xs text-slate-400 ml-2">({roomEntries.length})</span>
                       </div>
                       <div className="divide-y divide-slate-100">
                         {roomEntries.sort((a, b) => a.timestamp - b.timestamp).map((entry) => (
-                          <div key={entry._id} className="px-3 py-2 flex items-start gap-2">
+                          <div key={entry._id} className="px-3 py-2 flex items-start gap-2 group">
                             {entry.entryType === "voice" && (
                               <span className="text-xs text-blue-600">🎤</span>
                             )}
@@ -501,13 +696,7 @@ ${lines.join("\n")}`;
                       </div>
                     </div>
                   ))}
-                </section>
-              ) : (
-                <section className="py-8 text-center text-slate-400 mb-4">
-                  <p className="text-2xl mb-1">📋</p>
-                  <p className="text-sm">No entries yet</p>
-                  <p className="text-xs mt-1">Start charting above</p>
-                </section>
+                </>
               )}
 
               {/* End Shift */}
@@ -564,14 +753,78 @@ ${lines.join("\n")}`;
           {/* History Shift View */}
           {view === "history-shift" && selectedHistoryShift && (
             <>
-              {/* Shift Summary */}
-              {historyShiftSummary && (
+              {/* Timeline View */}
+              {historyShiftEntries && historyShiftEntries.length > 0 && (
                 <section className="mb-4">
-                  <div className="bg-white rounded-lg border border-slate-200 p-4">
-                    <h3 className="text-sm font-medium text-slate-600 mb-2">Shift Summary</h3>
-                    <pre className="text-xs text-slate-700 whitespace-pre-wrap font-sans">
-                      {historyShiftSummary}
-                    </pre>
+                  <div className="relative">
+                    {/* Timeline line */}
+                    <div className="absolute left-5 top-0 bottom-0 w-px bg-gradient-to-b from-slate-300 via-slate-200 to-slate-100" />
+
+                    {/* Shift start marker */}
+                    <div className="relative flex items-start gap-3 mb-4 pl-0">
+                      <div className="relative z-10 w-10 flex justify-center">
+                        <div className="w-3 h-3 rounded-full bg-slate-900 ring-4 ring-slate-50" />
+                      </div>
+                      <div className="pt-0.5">
+                        <p className="text-xs font-medium text-slate-500">Shift started</p>
+                        <p className="text-[10px] text-slate-400">
+                          {new Date(historyShiftEntries[0].timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Entries */}
+                    {[...historyShiftEntries].sort((a, b) => a.timestamp - b.timestamp).map((entry, idx) => {
+                      const prevEntry = idx > 0 ? [...historyShiftEntries].sort((a, b) => a.timestamp - b.timestamp)[idx - 1] : null;
+                      const timeLabel = getTimeLabel(entry.timestamp, prevEntry?.timestamp);
+                      const fdar = entry.fdarCategory ? fdarColors[entry.fdarCategory] : null;
+                      const roomColor = getRoomColor(entry.room);
+
+                      return (
+                        <div key={entry._id} className="relative flex items-start gap-3 mb-3">
+                          {timeLabel && (
+                            <div className="absolute -left-16 top-1 hidden md:block">
+                              <span className="text-[10px] font-medium text-slate-400 tabular-nums">{timeLabel}</span>
+                            </div>
+                          )}
+                          <div className="relative z-10 w-10 flex justify-center shrink-0">
+                            <div className={`w-2.5 h-2.5 rounded-full ring-4 ring-slate-50 ${fdar ? fdar.dot : "bg-slate-400"}`} />
+                          </div>
+                          <div className={`flex-1 rounded-xl border p-3 ${fdar ? `${fdar.bg} ${fdar.ring} ring-1` : "bg-white border-slate-200"}`}>
+                            <div className="flex items-start gap-2">
+                              <span className={`px-2 py-0.5 rounded-md text-xs font-semibold ring-1 shrink-0 ${roomColor}`}>
+                                {entry.room}
+                              </span>
+                              {entry.fdarCategory && (
+                                <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${fdar?.text || "text-slate-600"}`}>
+                                  {fdarLabels[entry.fdarCategory]}
+                                </span>
+                              )}
+                              {entry.entryType === "voice" && <span className="text-xs">🎤</span>}
+                              <span className="text-[10px] text-slate-400 md:hidden ml-auto shrink-0">
+                                {new Date(entry.timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                              </span>
+                            </div>
+                            <p className={`text-sm mt-2 leading-relaxed ${fdar ? fdar.text : "text-slate-700"}`}>
+                              {entry.description}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* Shift end marker */}
+                    <div className="relative flex items-start gap-3 mt-4 pl-0">
+                      <div className="relative z-10 w-10 flex justify-center">
+                        <div className="w-3 h-3 rounded-full bg-slate-300 ring-4 ring-slate-50" />
+                      </div>
+                      <div className="pt-0.5">
+                        <p className="text-xs font-medium text-slate-400">Shift ended</p>
+                        <p className="text-[10px] text-slate-400">
+                          {new Date(historyShiftEntries[historyShiftEntries.length - 1].timestamp).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </section>
               )}
