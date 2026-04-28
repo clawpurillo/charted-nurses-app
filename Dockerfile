@@ -17,6 +17,11 @@ COPY . .
 
 # Disable Next.js telemetry during build
 ENV NEXT_TELEMETRY_DISABLED=1
+# Set Convex URL for build-time static generation
+ARG NEXT_PUBLIC_CONVEX_URL=https://content-iguana-935.convex.cloud
+ARG NEXT_PUBLIC_CONVEX_SITE_URL=https://content-iguana-935.convex.site
+ENV NEXT_PUBLIC_CONVEX_URL=$NEXT_PUBLIC_CONVEX_URL
+ENV NEXT_PUBLIC_CONVEX_SITE_URL=$NEXT_PUBLIC_CONVEX_SITE_URL
 
 RUN npm run build
 
