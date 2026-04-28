@@ -67,49 +67,42 @@ function Dashboard() {
   // Voice recording handlers
   const startRecording = useCallback(async () => {
     try {
-      // Check for SpeechRecognition support
-      const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+      // Check for SpeechRecognition support - works on Chrome, Safari iOS 15+, Edge
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       if (!SpeechRecognition) {
-        alert("Speech recognition is not supported in this browser. Try Chrome or Safari.");
+        // Fallback: use text input for voice mode on unsupported browsers
+        alert("Voice recognition not available on this browser. Type your entry instead, or try Chrome/Safari.");
+        setIsVoiceMode(false);
         return;
       }
 
       const recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
+      recognition.continuous = false; // Single utterance for mobile compatibility
+      recognition.interimResults = false;
       recognition.lang = "en-US";
 
-      let finalTranscript = "";
-
       recognition.onresult = (event: any) => {
-        let interimTranscript = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript + " ";
-          } else {
-            interimTranscript += transcript;
-          }
-        }
-        setTranscript(finalTranscript + interimTranscript);
+        const transcript = event.results[0][0].transcript;
+        setTranscript(transcript);
+        // Auto-submit the transcript
+        handleAddEntry("voice", transcript);
+        setIsRecording(false);
       };
 
       recognition.onerror = (event: any) => {
         console.error("Speech recognition error:", event.error);
+        setIsRecording(false);
         if (event.error === "not-allowed") {
-          alert("Microphone access denied. Please check permissions.");
+          alert("Microphone access denied. Please check Settings > Safari > Microphone.");
+        } else if (event.error === "no-speech") {
+          // User didn't speak, just stop
+        } else {
+          alert("Speech recognition failed. Please try again or type your entry.");
         }
       };
 
       recognition.onend = () => {
-        // Auto-restart if still recording
-        if (isRecording) {
-          try {
-            recognition.start();
-          } catch (e) {
-            // Ignore restart errors
-          }
-        }
+        setIsRecording(false);
       };
 
       speechRecognitionRef.current = recognition;
@@ -119,8 +112,9 @@ function Dashboard() {
     } catch (err) {
       console.error("Failed to start recording:", err);
       alert("Could not access microphone. Please check permissions.");
+      setIsRecording(false);
     }
-  }, [isRecording]);
+  }, []);
 
   const stopRecording = useCallback(() => {
     if (speechRecognitionRef.current) {
