@@ -1,0 +1,61 @@
+version: "3.9"
+services:
+  charted:
+    image: 10.10.20.200:5000/charted:stg-latest
+    networks:
+      - edge
+    environment:
+      - CONVEX_DEPLOYMENT=content-iguana-935
+      - CONVEX_SITE_URL=https://content-iguana-935.convex.site
+      - JWKS="{\"keys\": [{\"kty\": \"RSA\", \"n\": \"tYugClHmrgGtFg0YnziChGMnSds03FpWvRzNGRVUsfSXTizKD0arR3b_G7p44V_0ArXrtOgl2XVt53HIs6vCTu9zeoyvPQRo-CN_uPx9thsQSO6Kn4zSyJHMDdRuDksAzs6QHNpkomG0x9UqWEFSYqRCPQOc5r-Wv_IRly86b0HM8i381rJU_wHH_dmJjVWmtaWAYW9LESTl6ZBFqCTsn_VKahE8DKGhmbRNj7r6RVo_kT6QwjzS0tnjoYjyTlzqD_bnqj9RVNP3VxtrqesJOi1UY39E6ANZ686toHFtjmBSbdN29DumOQkD2GJmxIA_5NyEVf1ofgPv0090xdhoxw\", \"e\": \"AQAB\", \"kid\": \"default\", \"use\": \"sig\", \"alg\": \"RS256\"}]}"
+      - |
+        JWT_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC1i6AKUeauAa0W
+DRifOIKEYydJ2zTcWla9HM0ZFVSx9JdOLMoPRqtHdv8bunjhX/QCteu06CXZdW3n
+ccizq8JO73N6jK89BGj4I3+4/H22GxBI7oqfjNLIkcwN1G4OSwDOzpAc2mSiYbTH
+1SpYQVJipEI9A5zmv5a/8hGXLzpvQczyLfzWslT/Acf92YmNVaa1pYBhb0sRJOXp
+kEWoJOyf9UpqETwMoaGZtE2PuvpFWj+RPpDCPNLS2eOhiPJOXOoP9ueqP1FU0/dX
+G2up6wk6LVRjf0ToA1nrzq2gcW2OYFJt03b0O6Y5CQPYYmbEgD/k3IRV/Wh+A+/T
+T3TF2GjHAgMBAAECggEAZXPxq9K5JuSo5XnMGK5rwa/ndM6ba8jQUD6YHzxcaFZX
+d8hv4rmLXhSR290JUGle42Tmo+JXxH5rPLvJfR6vJ42I6yNTirW8M28jIS140xus
+rhUgQqlf4dYYQmJEXphriybEQluJgXU4obPuRgO7FoTUv2QVep32kK2mRuaNsT4T
+U6zXdvIRreCgZQjQTxyQgPCIiVfEMTsb9uu4Dchn15/vjD27InS+k+SvJlCthkek
+hvsdJwMf5553FpR7FygYz1T/qR8U2hvrt5OgjeVHLcpCoN1hUqYFdqzz0SoX3xph
+HEpnUP/IPDSaoAa1zDX2PGuz7nWYDmDOHnyJB/uDgQKBgQDc/QIFkeKG5M+vEYEO
+XmPcdppdvw/Bnlf5AqwzjvSoZpSLrak9nAcaE7pUwqQC2TS6wprDcTtf7KdOzvy7
+FsPANDWqpiwD0IfIABlKUpj71JjRLZ/LClK3JZA6Fe6wG0GeNk25GVrRtgr0sBbb
+FiaeMk0AvXWmnkZpIbHyAf6//QKBgQDSTt2ZvqZdQcVKNGrltfTP967NO139Bv4K
+3FMFussDPs28+SdpPrljyUfnDbvnC5fa0jihkoqgkPzLs0OCLhHWmR0tXx8PYbvf
+IG9zwYbqtIdQBauRPXwgZJdm6phfqgRrlit2T113YK4L4bcYIXZbciCtzM3yYmsg
+B8TTXpqdEwKBgBfUZJJrL80yAT80mQEOpqAQXgb74lwTkhL0+dK5eKJsJVqGiHhv
+ScjDFdWsA3mXKHt3Hq8yl595anUyFsip5MPmHV9geeCTbQDhGdkM3RhSzYPI8rE3
+VMIRF+NbmBh/Z+0CmBD8rfFtOvM1xdEsK0/lxq3swDIOYTNXAdRB6NGVAoGBAMyM
+RGCK28iMddUskmQFy6ySnIOkoE+/g0sQ6/cArP/lD7ojIz/r7+isFrEV3JJl5jbA
+jLAplYeCPT3qh1iQcm0k0woUIGOXjWEBbSVLL2wMVidwvGQxRw9ChzdkKPuyo0X4
+8yDJJIE9mUqZKLnhofpjUIF6VzzOmJ64r6ldtEfdAoGAJe+YmI+h26P3B1BJ8eSH
+r8jP2KieOHkkEFL6ikfgwrDp007yjCLhChirvy4U/zmncttasPp1NB0VB/IasGYd
+N9AgFcaBDrhxaRQPxFsh/pniwwt4KKGttrddldzVDGIegsKtvl0osM1d6tIub1IP
+/vI+AAb2ZRHeIleT7MjOtUA=
+-----END PRIVATE KEY-----
+      - NEXT_PUBLIC_CONVEX_URL=https://content-iguana-935.convex.site
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == worker
+      update_config:
+        parallelism: 1
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=edge
+        - traefik.http.routers.charted-stg.rule=Host(`charted.fridaybuilt.com`)
+        - traefik.http.routers.charted-stg.entrypoints=web
+        - traefik.http.services.charted-stg.loadbalancer.server.port=3000
+
+networks:
+  edge:
+    external: true

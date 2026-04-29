@@ -1,22 +1,17 @@
 version: "3.9"
-
 services:
   charted:
-    image: ${IMAGE:-10.10.20.200:5000/charted:latest}
+    image: 10.10.20.200:5000/charted:stg-latest
     networks:
       - edge
     environment:
-      # Convex
-      CONVEX_DEPLOYMENT: ${CONVEX_DEPLOYMENT}
-      CONVEX_SITE_URL: ${CONVEX_SITE_URL}
-      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
-      JWKS: ${JWKS}
-
-      # App
-      NODE_ENV: production
-
+      - CONVEX_DEPLOYMENT=content-iguana-935
+      - CONVEX_SITE_URL=https://content-iguana-935.convex.site
+      - JWKS=${JWKS}
+      - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
+      - NEXT_PUBLIC_CONVEX_URL=https://content-iguana-935.convex.site
     deploy:
-      replicas: ${REPLICAS:-1}
+      replicas: 1
       placement:
         constraints:
           - node.role == worker
@@ -26,31 +21,12 @@ services:
         failure_action: rollback
       restart_policy:
         condition: on-failure
-        delay: 10s
-        max_attempts: 3
       labels:
         - traefik.enable=true
         - traefik.docker.network=edge
-        - traefik.http.routers.charted.rule=Host(`${HOST:-charted.fridaybuilt.com}`)
-        - traefik.http.routers.charted.entrypoints=web
-        - traefik.http.services.charted.loadbalancer.server.port=3000
-        # HTTPS
-        - traefik.http.routers.charted-secure.rule=Host(`${HOST:-charted.fridaybuilt.com}`)
-        - traefik.http.routers.charted-secure.entrypoints=websecure
-        - traefik.http.routers.charted-secure.tls=true
-
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
+        - traefik.http.routers.charted-stg.rule=Host(`charted.fridaybuilt.com`)
+        - traefik.http.routers.charted-stg.entrypoints=web
+        - traefik.http.services.charted-stg.loadbalancer.server.port=3000
 
 networks:
   edge:
