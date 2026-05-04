@@ -28,7 +28,7 @@ export const getUserSettings = query({
 
     // Default to free plan if no settings exist
     if (!settings) {
-      return { plan: "free", voiceEntriesUsedToday: 0, lastResetDate: null };
+      return null;
     }
 
     // Check if we need to reset daily counter

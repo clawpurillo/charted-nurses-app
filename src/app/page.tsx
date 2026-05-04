@@ -63,7 +63,7 @@ function Dashboard() {
     (userSettings.currentShiftDate !== shiftDate ||
       userSettings.currentShiftType !== shiftType);
 
-  if (userSettings === undefined) return null; // loading
+  if (userSettings === undefined || userSettings === null) return null; // loading or initializing
 
   if (needsSetup) {
     return (
