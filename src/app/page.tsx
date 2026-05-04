@@ -19,6 +19,7 @@ function Dashboard() {
   const user = useQuery(api.entries.me);
   const userSettings = useQuery(api.entries.getUserSettings);
   const entries = useQuery(api.entries.getTodayEntries);
+  const canUseVoice = useQuery(api.entries.canUseVoiceEntry);
   
   const addEntry = useMutation(api.entries.addEntry);
   const deleteEntry = useMutation(api.entries.deleteEntry);
@@ -29,6 +30,14 @@ function Dashboard() {
   const [activeRoom, setActiveRoom] = useState<string | null>(null);
   const [textInput, setTextInput] = useState("");
   const [showEndShift, setShowEndShift] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Clear error after 5 seconds
+  useEffect(() => {
+    if (!errorMessage) return;
+    const timer = setTimeout(() => setErrorMessage(null), 5000);
+    return () => clearTimeout(timer);
+  }, [errorMessage]);
 
   // Initialize settings if empty
   useEffect(() => {
@@ -97,14 +106,15 @@ function Dashboard() {
         entryType: "text",
       });
       setTextInput("");
+      setErrorMessage(null);
     } catch (err: unknown) {
-      alert((err as Error).message || "Failed to add entry");
+      setErrorMessage((err as Error).message || "Failed to add entry");
     }
   };
 
   const handleTranscribed = async (text: string) => {
     if (!activeRoom) {
-      alert("Please select a room first");
+      setErrorMessage("Please select a room first");
       return;
     }
     try {
@@ -113,8 +123,9 @@ function Dashboard() {
         description: text,
         entryType: "voice",
       });
+      setErrorMessage(null);
     } catch (err: unknown) {
-      alert((err as Error).message || "Failed to add voice entry");
+      setErrorMessage((err as Error).message || "Failed to add voice entry");
     }
   };
 
@@ -169,10 +180,26 @@ function Dashboard() {
           try {
             await deleteEntry({ entryId: id as import("../../convex/_generated/dataModel").Id<"entries"> });
           } catch (err: unknown) {
-            alert((err as Error).message || "Failed to delete entry");
+            setErrorMessage((err as Error).message || "Failed to delete entry");
           }
         }}
       />
+
+      {/* Error Banner */}
+      {errorMessage && (
+        <div className="fixed top-16 left-4 right-4 z-50 bg-red-50 border border-red-200 rounded-xl px-4 py-3 shadow-lg flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+          <svg className="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="text-sm text-red-700 flex-1">{errorMessage}</p>
+          <button
+            onClick={() => setErrorMessage(null)}
+            className="text-red-400 hover:text-red-600 shrink-0"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Bottom Action Area (Sticky) */}
       <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-100 pb-safe-bottom shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)] z-40">
@@ -202,7 +229,8 @@ function Dashboard() {
             <div className="shrink-0">
               <HoldToTalk
                 onTranscribed={handleTranscribed}
-                disabled={!activeRoom}
+                disabled={!activeRoom || canUseVoice === false}
+                limitReached={canUseVoice === false}
               />
             </div>
 

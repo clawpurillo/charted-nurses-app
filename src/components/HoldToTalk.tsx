@@ -8,9 +8,10 @@ type RecordingState = "idle" | "recording" | "transcribing" | "done" | "error";
 interface HoldToTalkProps {
   onTranscribed: (text: string) => Promise<void>;
   disabled?: boolean;
+  limitReached?: boolean;
 }
 
-export default function HoldToTalk({ onTranscribed, disabled }: HoldToTalkProps) {
+export default function HoldToTalk({ onTranscribed, disabled, limitReached }: HoldToTalkProps) {
   const token = useAuthToken();
   const [state, setState] = useState<RecordingState>("idle");
   const [statusText, setStatusText] = useState("");
@@ -143,7 +144,7 @@ export default function HoldToTalk({ onTranscribed, disabled }: HoldToTalkProps)
             : "text-slate-400"
         }`}
       >
-        {statusText || (disabled ? "Select a room first" : "Hold to speak")}
+        {statusText || (limitReached ? "Daily limit reached" : disabled ? "Select a room first" : "Hold to speak")}
       </p>
 
       {/* Main button */}
