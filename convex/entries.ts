@@ -167,31 +167,12 @@ export const canUseVoiceEntry = query({
   },
 });
 
-export const updateUserPlan = mutation({
-  args: { plan: v.union(v.literal("free"), v.literal("basic"), v.literal("pro")) },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Not authenticated");
-
-    const settings = await ctx.db
-      .query("userSettings")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .first();
-
-    if (!settings) {
-      throw new Error("User settings not initialized");
-    }
-
-    const today = new Date().toLocaleDateString("en-CA");
-    await ctx.db.patch(settings._id, {
-      plan: args.plan,
-      voiceEntriesUsedToday: 0,
-      lastResetDate: today,
-    });
-
-    return { success: true, plan: args.plan };
-  },
-});
+// Removed: Plan changes must be tied to payment verification (Stripe/webhook)
+// Self-upgrading bypasses business logic and pricing tiers.
+// export const updateUserPlan = mutation({
+//   args: { plan: v.union(v.literal("free"), v.literal("basic"), v.literal("pro")) },
+//   handler: async (ctx, args) => { ... }
+// });
 
 export const incrementVoiceCount = mutation({
   args: {},

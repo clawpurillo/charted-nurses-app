@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import OpenAI from "openai";
 
 const openai = new OpenAI({
@@ -7,10 +8,23 @@ const openai = new OpenAI({
 
 export async function POST(request: NextRequest) {
   try {
+    const token = await convexAuthNextjsToken();
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
-        { error: "OpenAI API key not configured" },
+        { error: "Service configuration error" },
         { status: 500 }
+      );
+    }
+
+    const contentType = request.headers.get("content-type");
+    if (!contentType || !contentType.startsWith("audio/")) {
+      return NextResponse.json(
+        { error: "Invalid content type. Expected audio/*" },
+        { status: 400 }
       );
     }
 
@@ -23,15 +37,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (audioBuffer.byteLength > 25 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "Audio file too large. Maximum size is 25MB" },
+        { status: 413 }
+      );
+    }
+
     const start = Date.now();
 
-    // Use Next.js native File object to send to OpenAI
     const file = new File([audioBuffer], "audio.webm", { type: "audio/webm" });
 
     const transcription = await openai.audio.transcriptions.create({
       file,
       model: "whisper-1",
-      language: "en", // Optional, but improves accuracy/speed for English
+      language: "en",
     });
 
     return NextResponse.json({
@@ -43,7 +63,7 @@ export async function POST(request: NextRequest) {
   } catch (error: unknown) {
     console.error("Transcribe API error:", error);
     return NextResponse.json(
-      { error: "Internal server error", details: (error as Error).message },
+      { error: "Transcription failed" },
       { status: 500 }
     );
   }
