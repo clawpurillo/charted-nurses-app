@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAuthToken } from "@convex-dev/auth/react";
 
 interface Entry {
   _id: string;
@@ -65,6 +66,7 @@ export default function EndShiftModal({
   shiftType,
   onClose,
 }: EndShiftModalProps) {
+  const token = useAuthToken();
   const [phase, setPhase] = useState<"confirm" | "compiling" | "done" | "error">(
     "confirm"
   );
@@ -85,11 +87,13 @@ export default function EndShiftModal({
   const compileNotes = async () => {
     setPhase("compiling");
     try {
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      
       const res = await fetch("/api/compile-fdar", {
         method: "POST",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ entries, shiftDate, shiftType }),
+        headers,
+        body: JSON.stringify({ shiftDate, shiftType }),
       });
 
       if (!res.ok) {

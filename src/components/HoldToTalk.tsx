@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { useAuthToken } from "@convex-dev/auth/react";
 
 type RecordingState = "idle" | "recording" | "transcribing" | "done" | "error";
 
@@ -10,6 +11,7 @@ interface HoldToTalkProps {
 }
 
 export default function HoldToTalk({ onTranscribed, disabled }: HoldToTalkProps) {
+  const token = useAuthToken();
   const [state, setState] = useState<RecordingState>("idle");
   const [statusText, setStatusText] = useState("");
 
@@ -55,9 +57,12 @@ export default function HoldToTalk({ onTranscribed, disabled }: HoldToTalkProps)
 
         try {
           const blob = new Blob(chunksRef.current, { type: mimeType || "audio/webm" });
+          const headers: Record<string, string> = {};
+          if (token) headers["Authorization"] = `Bearer ${token}`;
+          
           const res = await fetch("/api/transcribe", {
             method: "POST",
-            credentials: "same-origin",
+            headers,
             body: blob,
           });
 
@@ -109,7 +114,7 @@ export default function HoldToTalk({ onTranscribed, disabled }: HoldToTalkProps)
         setStatusText("");
       }, 2000);
     }
-  }, [disabled, onTranscribed]);
+  }, [disabled, onTranscribed, token]);
 
   const stopRecording = useCallback(() => {
     if (
