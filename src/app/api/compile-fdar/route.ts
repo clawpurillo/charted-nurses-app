@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { convexAuthNextjsToken } from "@convex-dev/auth/nextjs/server";
 import OpenAI from "openai";
 import { z } from "zod";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+function getTokenFromRequest(request: NextRequest): string | null {
+  const auth = request.headers.get("authorization");
+  if (!auth || !auth.startsWith("Bearer ")) return null;
+  return auth.slice(7);
+}
 
 interface Entry {
   _id: string;
@@ -70,7 +75,7 @@ async function asyncPool<T>(
 
 export async function POST(request: NextRequest) {
   try {
-    const token = await convexAuthNextjsToken();
+    const token = getTokenFromRequest(request);
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
