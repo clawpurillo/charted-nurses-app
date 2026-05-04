@@ -1,0 +1,26 @@
+services:
+  charted:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_CONVEX_URL: "https://joyous-guanaco-769.convex.cloud"
+        NEXT_PUBLIC_CONVEX_SITE_URL: "https://joyous-guanaco-769.convex.site"
+    ports:
+      - "8081:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      - CONVEX_DEPLOYMENT=joyous-guanaco-769
+      - CONVEX_SITE_URL=https://joyous-guanaco-769.convex.site
+      - NEXT_PUBLIC_CONVEX_URL=https://joyous-guanaco-769.convex.cloud
+      - WHISPER_SERVER_URL=http://host.docker.internal:9000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

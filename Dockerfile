@@ -15,11 +15,14 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Remove .env file to prevent it from overriding build args
+RUN rm -f .env .env.local .env.production
+
 # Disable Next.js telemetry during build
 ENV NEXT_TELEMETRY_DISABLED=1
-# Set Convex URL for build-time static generation
-ARG NEXT_PUBLIC_CONVEX_URL=https://content-iguana-935.convex.cloud
-ARG NEXT_PUBLIC_CONVEX_SITE_URL=https://content-iguana-935.convex.site
+# Set Convex URL for build-time static generation (override via --build-arg)
+ARG NEXT_PUBLIC_CONVEX_URL=https://joyous-guanaco-769.convex.cloud
+ARG NEXT_PUBLIC_CONVEX_SITE_URL=https://joyous-guanaco-769.convex.site
 ENV NEXT_PUBLIC_CONVEX_URL=$NEXT_PUBLIC_CONVEX_URL
 ENV NEXT_PUBLIC_CONVEX_SITE_URL=$NEXT_PUBLIC_CONVEX_SITE_URL
 
@@ -34,6 +37,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
+
+# Install ffmpeg for audio conversion (webm/opus → WAV for whisper)
+RUN apk add --no-cache ffmpeg
 
 # Copy standalone output
 COPY --from=builder /app/public ./public

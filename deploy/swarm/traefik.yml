@@ -1,0 +1,34 @@
+version: "3.9"
+services:
+  traefik:
+    image: traefik:latest
+    command:
+      - --providers.swarm=true
+      - --providers.swarm.endpoint=unix:///var/run/docker.sock
+      - --providers.swarm.exposedByDefault=false
+      - --providers.swarm.network=edge
+      - --providers.file.directory=/traefik/dynamic
+      - --providers.file.watch=true
+      - --entrypoints.web.address=:80
+      - --api.dashboard=true
+      - --log.level=INFO
+      - --accesslog=true
+    ports:
+      - target: 80
+        published: 8022
+        protocol: tcp
+        mode: ingress
+    environment:
+      - DOCKER_API_VERSION=1.44
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - edge
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  edge:
+    external: true

@@ -5,11 +5,11 @@ services:
     networks:
       - edge
     environment:
-      - CONVEX_DEPLOYMENT=content-iguana-935
-      - CONVEX_SITE_URL=https://content-iguana-935.convex.site
-      - JWKS=${JWKS}
-      - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
-      - NEXT_PUBLIC_CONVEX_URL=https://content-iguana-935.convex.site
+      - CONVEX_DEPLOYMENT=joyous-guanaco-769
+      - CONVEX_SITE_URL=https://joyous-guanaco-769.convex.site
+      - 'JWKS=${JWKS}'
+      - 'JWT_PRIVATE_KEY_B64=${JWT_PRIVATE_KEY_B64}'
+      - NEXT_PUBLIC_CONVEX_URL=https://joyous-guanaco-769.convex.cloud
     deploy:
       replicas: 1
       placement:

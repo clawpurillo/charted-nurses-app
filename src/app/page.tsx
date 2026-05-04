@@ -40,8 +40,8 @@ function Dashboard() {
   // Voice recording
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const speechRecognitionRef = useRef<any>(null);
   const [transcript, setTranscript] = useState("");
+  const [isTranscribing, setIsTranscribing] = useState(false);
 
   // History queries
   const historyShiftEntries = useQuery(
@@ -64,51 +64,79 @@ function Dashboard() {
     }
   }, [user, userSettings, initializeSettings]);
 
-  // Voice recording handlers
+  // Voice recording handlers (MediaRecorder + Whisper)
   const startRecording = useCallback(async () => {
     try {
-      // Check for SpeechRecognition support - works on Chrome, Safari iOS 15+, Edge
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        // Fallback: use text input for voice mode on unsupported browsers
-        alert("Voice recognition not available on this browser. Type your entry instead, or try Chrome/Safari.");
-        setIsVoiceMode(false);
-        return;
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      
+      // Try to get WAV-compatible recorder, fallback to webm/opus
+      let mimeType = "audio/webm;codecs=opus";
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = "audio/webm";
+      }
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = "audio/ogg";
+      }
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = "audio/mp4";
       }
 
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false; // Single utterance for mobile compatibility
-      recognition.interimResults = false;
-      recognition.lang = "en-US";
+      const recorder = new MediaRecorder(stream, { mimeType });
+      const chunks: Blob[] = [];
 
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setTranscript(transcript);
-        // Auto-submit the transcript
-        handleAddEntry("voice", transcript);
-        setIsRecording(false);
-      };
-
-      recognition.onerror = (event: any) => {
-        console.error("Speech recognition error:", event.error);
-        setIsRecording(false);
-        if (event.error === "not-allowed") {
-          alert("Microphone access denied. Please check Settings > Safari > Microphone.");
-        } else if (event.error === "no-speech") {
-          // User didn't speak, just stop
-        } else {
-          alert("Speech recognition failed. Please try again or type your entry.");
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunks.push(e.data);
         }
       };
 
-      recognition.onend = () => {
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        
+        const audioBlob = new Blob(chunks, { type: mimeType });
         setIsRecording(false);
+        setIsTranscribing(true);
+        setTranscript("Transcribing...");
+
+        try {
+          const response = await fetch("/api/transcribe", {
+            method: "POST",
+            body: audioBlob,
+          });
+
+          if (!response.ok) {
+            throw new Error("Transcription failed");
+          }
+
+          const result = await response.json();
+          const text = result.text || "";
+          setTranscript(text);
+          
+          if (text.trim()) {
+            // Auto-submit the transcript
+            await handleAddEntry("voice", text.trim());
+          }
+        } catch (err: any) {
+          console.error("Transcription error:", err);
+          setTranscript(`Error: ${err.message}`);
+          alert("Transcription failed. Please try again or type your entry.");
+        } finally {
+          setIsTranscribing(false);
+          setTranscript("");
+        }
       };
 
-      speechRecognitionRef.current = recognition;
-      recognition.start();
+      recorder.onerror = () => {
+        stream.getTracks().forEach((t) => t.stop());
+        setIsRecording(false);
+        alert("Recording failed. Please try again.");
+      };
+
+      mediaRecorderRef.current = recorder;
+      recorder.start();
       setIsRecording(true);
       setTranscript("");
+      audioChunksRef.current = chunks;
     } catch (err) {
       console.error("Failed to start recording:", err);
       alert("Could not access microphone. Please check permissions.");
@@ -117,24 +145,19 @@ function Dashboard() {
   }, []);
 
   const stopRecording = useCallback(() => {
-    if (speechRecognitionRef.current) {
-      speechRecognitionRef.current.stop();
-      speechRecognitionRef.current = null;
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+      mediaRecorderRef.current.stop();
+    } else {
+      setIsRecording(false);
     }
-    setIsRecording(false);
-    
-    // Use the transcript as the entry
-    if (transcript.trim()) {
-      handleAddEntry("voice", transcript.trim());
-      setTranscript("");
-    }
-  }, [transcript]);
+    mediaRecorderRef.current = null;
+  }, []);
 
   const handleAddEntry = async (entryType: "text" | "voice" = "text", descriptionOverride?: string) => {
     const desc = descriptionOverride || entryInput;
     if (!desc.trim()) return;
     
-    if (entryType === "voice" && !canUseVoice) {
+    if (entryType === "voice" && canUseVoice === false) {
       alert("Voice entry limit reached for today");
       return;
     }
@@ -443,11 +466,12 @@ ${lines.join("\n")}`;
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      value={isRecording ? transcript : entryInput}
+                      value={isRecording ? "🎤 Recording..." : isTranscribing ? "⏳ Transcribing..." : transcript || entryInput}
                       onChange={(e) => isRecording ? setTranscript(e.target.value) : setEntryInput(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleAddEntry(isVoiceMode ? "voice" : "text")}
-                      placeholder={isVoiceMode ? "Tap 🎤 to start speaking..." : isRecording ? "Listening..." : '"Room 101, IV inserted"'}
-                      className="flex-1 px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+                      placeholder={isVoiceMode ? "Tap 🎤 to start speaking..." : isRecording ? "🎤 Recording..." : isTranscribing ? "⏳ Transcribing..." : '"Room 101, IV inserted"'}
+                      disabled={isRecording || isTranscribing}
+                      className="flex-1 px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 disabled:opacity-60"
                     />
                     <button
                       onClick={() => {
@@ -463,12 +487,14 @@ ${lines.join("\n")}`;
                       className={`px-3 py-2 rounded-md text-sm font-medium transition ${
                         isRecording
                           ? "bg-red-600 text-white animate-pulse"
-                          : isVoiceMode
-                            ? "bg-blue-600 text-white hover:bg-blue-700"
-                            : "bg-slate-900 text-white hover:bg-slate-800"
+                          : isTranscribing
+                            ? "bg-blue-600 text-white animate-pulse"
+                            : isVoiceMode
+                              ? "bg-blue-600 text-white hover:bg-blue-700"
+                              : "bg-slate-900 text-white hover:bg-slate-800"
                       } disabled:opacity-40`}
                     >
-                      {isRecording ? "⏹" : isVoiceMode ? "🎤" : "Add"}
+                      {isRecording ? "⏹" : isTranscribing ? "⏳" : isVoiceMode ? "🎤" : "Add"}
                     </button>
                   </div>
                   

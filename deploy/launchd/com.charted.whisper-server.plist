@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.charted.whisper-server</string>
+    
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/jamtraxx/.hermes/hermes-agent/venv/bin/python</string>
+        <string>/Users/jamtraxx/.hermes/PROJECTS/REPO/charted/whisper-server/server.py</string>
+        <string>--model</string>
+        <string>large-v3</string>
+        <string>--port</string>
+        <string>9000</string>
+        <string>--device</string>
+        <string>cpu</string>
+        <string>--compute-type</string>
+        <string>int8</string>
+    </array>
+    
+    <key>WorkingDirectory</key>
+    <string>/Users/jamtraxx/.hermes/PROJECTS/REPO/charted/whisper-server</string>
+    
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>WHISPER_MODEL</key>
+        <string>large-v3</string>
+        <key>WHISPER_PORT</key>
+        <string>9000</string>
+        <key>WHISPER_DEVICE</key>
+        <string>cpu</string>
+        <key>WHISPER_COMPUTE_TYPE</key>
+        <string>int8</string>
+    </dict>
+    
+    <key>RunAtLoad</key>
+    <true/>
+    
+    <key>KeepAlive</key>
+    <true/>
+    
+    <key>StandardOutPath</key>
+    <string>/tmp/whisper-server.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>/tmp/whisper-server-error.log</string>
+    
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+</dict>
+</plist>

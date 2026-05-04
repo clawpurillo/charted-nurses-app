@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  charted-proxy:
+    image: nginx:alpine
+    command: >
+      sh -c "cat > /etc/nginx/conf.d/default.conf << 'EOF'
+      server {
+          listen 80;
+          server_name charted.fridaybuilt.com;
+          
+          location / {
+              proxy_pass http://10.10.10.77:8081;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_http_version 1.1;
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection \"upgrade\";
+          }
+      }
+      EOF
+      nginx -g 'daemon off;'"
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=edge
+        - traefik.http.routers.charted.rule=Host(`charted.fridaybuilt.com`)
+        - traefik.http.routers.charted.entrypoints=web
+        - traefik.http.services.charted.loadbalancer.server.port=80
+    networks:
+      - edge
+
+networks:
+  edge:
+    external: true
