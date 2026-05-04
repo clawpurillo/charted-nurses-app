@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
         const entriesText = buildPrompt(room, byRoom[room]);
 
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
+          model: "gpt-4.1-mini",
           messages: [
             {
               role: "system",
