@@ -13,6 +13,10 @@ export default defineSchema({
     plan: v.union(v.literal("free"), v.literal("basic"), v.literal("pro")),
     voiceEntriesUsedToday: v.optional(v.number()),
     lastResetDate: v.optional(v.string()),
+    // Shift setup state
+    assignedRooms: v.optional(v.array(v.string())),
+    currentShiftDate: v.optional(v.string()),
+    currentShiftType: v.optional(v.union(v.literal("day"), v.literal("night"))),
   }).index("by_user", ["userId"]),
 
   entries: defineTable({

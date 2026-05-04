@@ -1,41 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { execFile } from "child_process";
-import { promisify } from "util";
-import * as fs from "fs";
-import * as os from "os";
-import * as path from "path";
+import OpenAI from "openai";
 
-const execFileAsync = promisify(execFile);
-
-// Whisper server URL — runs locally on the Mac Mini
-const WHISPER_SERVER_URL = process.env.WHISPER_SERVER_URL || "http://localhost:9000";
-
-async function convertToWav(buffer: Buffer): Promise<Buffer> {
-  const tmpWav = path.join(os.tmpdir(), `transcribe-${Date.now()}.wav`);
-  const tmpInput = path.join(os.tmpdir(), `transcribe-input-${Date.now()}`);
-  
-  try {
-    await fs.promises.writeFile(tmpInput, buffer);
-    await execFileAsync("ffmpeg", [
-      "-i", tmpInput,
-      "-ar", "16000",
-      "-ac", "1",
-      "-f", "wav",
-      "-y",
-      tmpWav,
-    ]);
-    
-    return await fs.promises.readFile(tmpWav);
-  } finally {
-    await Promise.allSettled([
-      fs.promises.unlink(tmpInput).catch(() => {}),
-      fs.promises.unlink(tmpWav).catch(() => {}),
-    ]);
-  }
-}
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function POST(request: NextRequest) {
   try {
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { error: "OpenAI API key not configured" },
+        { status: 500 }
+      );
+    }
+
     const audioBuffer = await request.arrayBuffer();
 
     if (audioBuffer.byteLength === 0) {
@@ -45,39 +23,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Convert to WAV (handles webm/opus, mp4, ogg, etc.)
-    const wavBuffer = await convertToWav(Buffer.from(audioBuffer));
+    const start = Date.now();
 
-    // Forward to whisper server as WAV
-    const response = await fetch(`${WHISPER_SERVER_URL}/transcribe`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "audio/wav",
-      },
-      body: wavBuffer.buffer as ArrayBuffer,
+    // Use Next.js native File object to send to OpenAI
+    const file = new File([audioBuffer], "audio.webm", { type: "audio/webm" });
+
+    const transcription = await openai.audio.transcriptions.create({
+      file,
+      model: "whisper-1",
+      language: "en", // Optional, but improves accuracy/speed for English
     });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Whisper server error:", response.status, errorText);
-      return NextResponse.json(
-        { error: "Transcription failed", details: errorText },
-        { status: 502 }
-      );
-    }
-
-    const result = await response.json();
 
     return NextResponse.json({
-      text: result.text || "",
-      language: result.language || "en",
-      duration: result.duration || 0,
-      transcribeTime: result.transcribe_time || 0,
+      text: transcription.text || "",
+      language: "en",
+      duration: 0,
+      transcribeTime: (Date.now() - start) / 1000,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Transcribe API error:", error);
     return NextResponse.json(
-      { error: "Internal server error", details: error.message },
+      { error: "Internal server error", details: (error as Error).message },
       { status: 500 }
     );
   }

@@ -2,6 +2,7 @@
 
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function LandingPage() {
   const { signIn } = useAuthActions();
@@ -24,8 +25,13 @@ export default function LandingPage() {
       } else {
         await signIn("password", { email, password, flow: "signIn" });
       }
-    } catch (err: any) {
-      setError(err.message || "Something went wrong");
+    } catch (err: unknown) {
+      const msg = (err as Error).message || "Something went wrong";
+      if (msg.includes("InvalidSecret") || msg.includes("InvalidAccountId") || msg.includes("AccountNotFound")) {
+        setError("Invalid email or password.");
+      } else {
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }
@@ -36,8 +42,9 @@ export default function LandingPage() {
       {/* Nav */}
       <nav className="fixed top-0 w-full bg-white/95 backdrop-blur border-b border-slate-100 z-50">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
-          <a href="#" className="text-lg font-bold text-slate-900 tracking-tight">
-            Charted
+          <a href="#" className="flex items-center gap-2">
+            <Image src="/logo.png" alt="Charted Logo" width={28} height={28} className="rounded-md" />
+            <span className="text-lg font-bold text-slate-900 tracking-tight">Charted</span>
           </a>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-slate-600 hover:text-slate-900 transition">Features</a>
@@ -148,7 +155,7 @@ export default function LandingPage() {
       <section id="how" className="py-10 px-6">
         <div className="max-w-xl mx-auto">
           <h2 className="text-xl font-semibold text-slate-900 mb-6 text-center">
-            Three steps. That's it.
+            Three steps. That&apos;s it.
           </h2>
           <div className="space-y-4">
             {[

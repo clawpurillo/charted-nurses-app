@@ -68,6 +68,70 @@ export const initializeUserSettings = mutation({
   },
 });
 
+export const startShift = mutation({
+  args: {
+    rooms: v.array(v.string()),
+    shiftDate: v.string(),
+    shiftType: v.union(v.literal("day"), v.literal("night")),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const existing = await ctx.db
+      .query("userSettings")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    const rooms = args.rooms
+      .map((r) => r.trim().toUpperCase())
+      .filter((r) => r.length > 0);
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        assignedRooms: rooms,
+        currentShiftDate: args.shiftDate,
+        currentShiftType: args.shiftType,
+      });
+      return { shiftDate: args.shiftDate, shiftType: args.shiftType, rooms };
+    }
+
+    await ctx.db.insert("userSettings", {
+      userId,
+      plan: "free",
+      voiceEntriesUsedToday: 0,
+      lastResetDate: args.shiftDate,
+      assignedRooms: rooms,
+      currentShiftDate: args.shiftDate,
+      currentShiftType: args.shiftType,
+    });
+
+    return { shiftDate: args.shiftDate, shiftType: args.shiftType, rooms };
+  },
+});
+
+export const updateAssignedRooms = mutation({
+  args: { rooms: v.array(v.string()) },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const settings = await ctx.db
+      .query("userSettings")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    const rooms = args.rooms
+      .map((r) => r.trim().toUpperCase())
+      .filter((r) => r.length > 0);
+
+    if (settings) {
+      await ctx.db.patch(settings._id, { assignedRooms: rooms });
+    }
+    return rooms;
+  },
+});
+
 // Voice entry limits per plan
 const VOICE_LIMITS = {
   free: 5,
