@@ -57,6 +57,7 @@ export default function HoldToTalk({ onTranscribed, disabled }: HoldToTalkProps)
           const blob = new Blob(chunksRef.current, { type: mimeType || "audio/webm" });
           const res = await fetch("/api/transcribe", {
             method: "POST",
+            credentials: "same-origin",
             body: blob,
           });
 

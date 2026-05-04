@@ -87,6 +87,7 @@ export default function EndShiftModal({
     try {
       const res = await fetch("/api/compile-fdar", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ entries, shiftDate, shiftType }),
       });
