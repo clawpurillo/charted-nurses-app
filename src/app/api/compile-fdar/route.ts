@@ -2,9 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { z } from "zod";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let _openai: OpenAI | null = null;
+
+function getOpenAI(): OpenAI {
+  if (!_openai) {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error("OPENAI_API_KEY is not configured");
+    }
+    _openai = new OpenAI({ apiKey });
+  }
+  return _openai;
+}
 
 function getTokenFromRequest(request: NextRequest): string | null {
   const auth = request.headers.get("authorization");
@@ -88,7 +97,7 @@ export async function POST(request: NextRequest) {
     const { shiftDate, shiftType } = parsed.data;
 
     if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json({ error: "Service configuration error" }, { status: 500 });
+      return NextResponse.json({ error: "Service configuration error" }, { status: 503 });
     }
 
     const convexUrl = process.env.CONVEX_SITE_URL;
@@ -137,7 +146,7 @@ export async function POST(request: NextRequest) {
       try {
         const entriesText = buildPrompt(room, byRoom[room]);
 
-        const completion = await openai.chat.completions.create({
+        const completion = await getOpenAI().chat.completions.create({
           model: "gpt-4.1-mini",
           messages: [
             {
