@@ -5,6 +5,16 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-accent-new: var(--accent-new);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-surface: var(--surface);
+  --color-card-new: var(--card-new);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
@@ -48,6 +58,18 @@
 }
 
 :root {
+  /* Clinical Calm design tokens */
+  --brand: #0EA5E9;
+  --brand-soft: #F0F9FF;
+  --accent-new: #10B981;
+  --warning: #F59E0B;
+  --danger: #F43F5E;
+  --surface: #FFFFFF;
+  --card-new: #FFFFFF;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -83,6 +105,18 @@
 }
 
 .dark {
+  /* Clinical Calm design tokens — dark mode */
+  --brand: #0EA5E9;
+  --brand-soft: #082F49;
+  --accent-new: #10B981;
+  --warning: #F59E0B;
+  --danger: #F43F5E;
+  --surface: #0F172A;
+  --card-new: #1E293B;
+  --text-primary: #FFFFFF;
+  --text-secondary: #CBD5E1;
+  --text-muted: #64748B;
+
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);

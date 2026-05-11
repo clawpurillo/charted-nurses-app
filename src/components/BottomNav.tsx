@@ -82,12 +82,13 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
 
   return (
     <nav
-      className="h-16 bg-white/97 backdrop-blur-md border-t border-slate-100 flex items-stretch shrink-0 z-50 pb-safe-bottom"
+      className="h-16 bg-white/80 backdrop-blur-xl border-t border-slate-200/50 flex items-stretch shrink-0 z-50 pb-safe-bottom"
       role="tablist"
       aria-label="Main navigation"
     >
       {TABS.map((tab) => {
         const isActive = activeTab === tab.id;
+        const isEntry = tab.id === "entry";
         return (
           <button
             key={tab.id}
@@ -98,22 +99,29 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
             className={`
               flex-1 flex flex-col items-center justify-center gap-0.5
               border-none bg-transparent cursor-pointer
-              text-xs font-semibold transition-colors duration-150
-              min-h-16 relative
-              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-inset
-              ${isActive ? "text-slate-900" : "text-slate-400"}
-              active:bg-slate-50
+              text-xs font-semibold transition-all duration-200 ease-out
+              min-h-12 min-w-12 relative
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-inset
+              ${isActive ? "text-brand" : "text-slate-400"}
+              active:scale-90
             `}
           >
-            {/* Active indicator bar */}
-            {isActive && (
+            {/* Entry tab: brand-tinted background pill */}
+            {isActive && isEntry && (
               <span
-                className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-b-md bg-slate-900"
+                className="absolute inset-1 rounded-lg bg-brand/10"
                 aria-hidden="true"
               />
             )}
-            {/* Icon */}
-            <span className="w-6 h-6 flex items-center justify-center" aria-hidden="true">
+            {/* Active indicator bar — brand pill */}
+            {isActive && (
+              <span
+                className="absolute top-1 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-brand"
+                aria-hidden="true"
+              />
+            )}
+            {/* Icon — larger (w-5 h-5) */}
+            <span className="w-5 h-5 flex items-center justify-center" aria-hidden="true">
               {tab.icon}
             </span>
             {/* Label */}

@@ -27,11 +27,11 @@ export interface RoomCardData {
   lastEntryLabel: string;
 }
 
-const STATUS_CONFIG: Record<RoomStatus, { label: string; color: string; bg: string; border: string; dot: string }> = {
-  critical: { label: "Needs attention", color: "text-red-700", bg: "bg-red-50", border: "border-l-red-500", dot: "bg-red-400" },
-  warning: { label: "Check soon", color: "text-yellow-700", bg: "bg-yellow-50", border: "border-l-yellow-500", dot: "bg-yellow-400" },
-  ok: { label: "All clear", color: "text-green-700", bg: "bg-green-50", border: "border-l-green-500", dot: "bg-green-400" },
-  neutral: { label: "No entries", color: "text-slate-600", bg: "bg-slate-100", border: "border-l-slate-400", dot: "bg-slate-300" },
+const STATUS_CONFIG: Record<RoomStatus, { label: string; color: string; border: string; dot: string }> = {
+  critical: { label: "Needs attention", color: "text-red-700 dark:text-red-400", border: "border-l-red-500", dot: "bg-red-400" },
+  warning: { label: "Check soon", color: "text-yellow-700 dark:text-yellow-400", border: "border-l-yellow-500", dot: "bg-yellow-400" },
+  ok: { label: "All clear", color: "text-green-700 dark:text-green-400", border: "border-l-green-500", dot: "bg-green-400" },
+  neutral: { label: "No entries", color: "text-slate-600 dark:text-slate-400", border: "border-l-slate-400", dot: "bg-slate-300" },
 };
 
 interface RoomGridProps {
@@ -46,7 +46,7 @@ function Sparkline({ dots }: { dots: SparklineDot[] }) {
     return (
       <div className="flex items-center gap-[3px]">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="w-1.5 h-1.5 rounded-full bg-slate-200" />
+          <div key={i} className="w-1.5 h-1.5 rounded-full bg-slate-200 dark:bg-slate-600" />
         ))}
       </div>
     );
@@ -67,7 +67,7 @@ function Sparkline({ dots }: { dots: SparklineDot[] }) {
       {/* Pad to 8 dots if fewer entries */}
       {dots.length < 8 &&
         Array.from({ length: 8 - dots.length }).map((_, i) => (
-          <div key={`empty-${i}`} className="w-1.5 h-1.5 rounded-full bg-slate-200" />
+          <div key={`empty-${i}`} className="w-1.5 h-1.5 rounded-full bg-slate-200 dark:bg-slate-600" />
         ))}
     </div>
   );
@@ -85,7 +85,7 @@ export default function RoomGrid({ rooms, activeRoom, onSelectRoom, onAddRoom }:
   return (
     <div className="p-4">
       <div className="grid grid-cols-2 gap-3">
-        {rooms.map((room) => {
+        {rooms.map((room, index) => {
           const config = STATUS_CONFIG[room.status];
           const isActive = activeRoom === room.room;
 
@@ -94,22 +94,27 @@ export default function RoomGrid({ rooms, activeRoom, onSelectRoom, onAddRoom }:
               key={room.room}
               onClick={() => onSelectRoom(room.room)}
               className={`
-                relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4
-                text-left transition-all duration-150
-                border-l-4 ${config.border}
+                animate-in fade-in slide-in-from-bottom-4 duration-200 fill-mode-both
+                relative overflow-hidden rounded-2xl bg-white dark:bg-card p-4
+                text-left transition-all duration-200 ease-out
+                border-0 border-l-4 ${config.border}
+                shadow-sm shadow-slate-200/50 dark:shadow-none
                 min-h-[120px] flex flex-col
-                ${isActive ? "ring-2 ring-slate-900 shadow-md" : "shadow-sm"}
+                ${isActive ? "ring-2 ring-brand/30" : ""}
                 active:scale-[0.98]
-                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
               `}
               role="listitem"
               aria-label={`Room ${room.room}, ${config.label}, ${room.entryCount} entries, last entry ${room.lastEntryLabel}`}
+              style={{ animationDelay: `${index * 50}ms` }}
             >
-              <div className="text-2xl font-extrabold tracking-tight leading-none text-slate-900">
+              <div className="text-3xl font-extrabold tracking-tight leading-none text-slate-900 dark:text-white">
                 {room.room}
               </div>
               <div className="mt-2 flex items-center gap-2">
-                <span className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold uppercase tracking-wider ${config.bg} ${config.color}`}>
+                {/* Status badge: colored LEFT border + icon dot, no colored background */}
+                <span className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold uppercase tracking-wider bg-slate-50 dark:bg-slate-700/50 ${config.color}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} aria-hidden="true" />
                   {config.label}
                 </span>
               </div>
@@ -120,10 +125,10 @@ export default function RoomGrid({ rooms, activeRoom, onSelectRoom, onAddRoom }:
               </div>
 
               <div className="mt-auto pt-3 flex items-center justify-between">
-                <span className="text-[11px] font-medium text-slate-400">
+                <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
                   {room.lastEntryLabel}
                 </span>
-                <span className="text-[11px] font-semibold text-slate-500">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                   {room.entryCount} {room.entryCount === 1 ? "entry" : "entries"}
                 </span>
               </div>
@@ -134,10 +139,11 @@ export default function RoomGrid({ rooms, activeRoom, onSelectRoom, onAddRoom }:
         {/* Add Room card */}
         <button
           onClick={handleAddRoom}
-          className="rounded-2xl border-2 border-dashed border-slate-200 p-4 text-center text-sm font-medium text-slate-400 transition hover:border-slate-400 hover:text-slate-600 min-h-[120px] flex flex-col items-center justify-center gap-2 active:scale-[0.98]"
+          className="animate-in fade-in slide-in-from-bottom-4 duration-200 fill-mode-both rounded-2xl border-2 border-dashed border-brand/30 dark:border-brand/20 p-4 text-center text-sm font-medium text-brand/60 dark:text-brand/50 transition-all duration-200 ease-out hover:border-brand hover:text-brand min-h-[120px] flex flex-col items-center justify-center gap-2 active:scale-[0.98]"
           aria-label="Add a room"
+          style={{ animationDelay: `${rooms.length * 50}ms` }}
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 transition-transform duration-200 hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v14m-7-7h14" />
           </svg>
           <span>Add Room</span>
