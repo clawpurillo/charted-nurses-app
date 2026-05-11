@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useAuthToken } from "@convex-dev/auth/react";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 interface Entry {
   _id: string;
@@ -67,11 +69,13 @@ export default function EndShiftModal({
   onClose,
 }: EndShiftModalProps) {
   const token = useAuthToken();
+  const endShift = useMutation(api.entries.endShift);
   const [phase, setPhase] = useState<"confirm" | "compiling" | "done" | "error">(
     "confirm"
   );
   const [fdarRooms, setFdarRooms] = useState<RoomFdar[]>([]);
   const [errorMsg, setErrorMsg] = useState("");
+  const [endingShift, setEndingShift] = useState(false);
 
   const rooms = Array.from(new Set(entries.map((e) => e.room))).sort();
 
@@ -107,6 +111,19 @@ export default function EndShiftModal({
     } catch (err: unknown) {
       setErrorMsg((err as Error).message ?? "Something went wrong");
       setPhase("error");
+    }
+  };
+
+  const handleDone = async () => {
+    setEndingShift(true);
+    try {
+      await endShift();
+    } catch (err: unknown) {
+      // Log but don't block the user from closing the modal
+      console.error("Failed to end shift:", err);
+    } finally {
+      setEndingShift(false);
+      onClose();
     }
   };
 
@@ -272,10 +289,11 @@ export default function EndShiftModal({
             label="Copy All Rooms"
           />
           <button
-            onClick={onClose}
-            className="flex-1 py-3.5 bg-slate-900 text-white rounded-2xl text-sm font-semibold hover:bg-slate-800 transition"
+            onClick={handleDone}
+            disabled={endingShift}
+            className="flex-1 py-3.5 bg-slate-900 text-white rounded-2xl text-sm font-semibold hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Done
+            {endingShift ? "Ending..." : "Done"}
           </button>
         </div>
       )}

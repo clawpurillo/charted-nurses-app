@@ -25,6 +25,9 @@ ARG NEXT_PUBLIC_CONVEX_URL=https://joyous-guanaco-769.convex.cloud
 ARG NEXT_PUBLIC_CONVEX_SITE_URL=https://joyous-guanaco-769.convex.site
 ENV NEXT_PUBLIC_CONVEX_URL=$NEXT_PUBLIC_CONVEX_URL
 ENV NEXT_PUBLIC_CONVEX_SITE_URL=$NEXT_PUBLIC_CONVEX_SITE_URL
+# Set app URL for OG image absolute URLs (override via --build-arg)
+ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 
 RUN npm run build
 

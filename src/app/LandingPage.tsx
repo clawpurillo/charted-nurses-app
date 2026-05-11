@@ -50,18 +50,32 @@ export default function LandingPage() {
             <a href="#features" className="text-sm text-slate-600 hover:text-slate-900 transition">Features</a>
             <a href="#pricing" className="text-sm text-slate-600 hover:text-slate-900 transition">Pricing</a>
             <button
-              onClick={() => setShowAuth(true)}
-              className="text-sm px-3 py-1.5 bg-slate-900 text-white rounded-md font-medium hover:bg-slate-800 transition"
+              onClick={() => { setIsSignUp(false); setError(""); setShowAuth(true); }}
+              className="text-sm px-3 py-1.5 text-slate-700 hover:text-slate-900 font-medium transition"
             >
               Login
             </button>
+            <button
+              onClick={() => { setIsSignUp(true); setError(""); setShowAuth(true); }}
+              className="text-sm px-3 py-1.5 bg-slate-900 text-white rounded-md font-medium hover:bg-slate-800 transition"
+            >
+              Sign Up
+            </button>
           </div>
-          <button
-            onClick={() => setShowAuth(true)}
-            className="md:hidden text-sm px-3 py-1.5 bg-slate-900 text-white rounded-md font-medium"
-          >
-            Login
-          </button>
+          <div className="md:hidden flex items-center gap-2">
+            <button
+              onClick={() => { setIsSignUp(false); setError(""); setShowAuth(true); }}
+              className="text-sm px-3 py-1.5 text-slate-700 hover:text-slate-900 font-medium transition"
+            >
+              Login
+            </button>
+            <button
+              onClick={() => { setIsSignUp(true); setError(""); setShowAuth(true); }}
+              className="text-sm px-3 py-1.5 bg-slate-900 text-white rounded-md font-medium hover:bg-slate-800 transition"
+            >
+              Sign Up
+            </button>
+          </div>
         </div>
       </nav>
 
