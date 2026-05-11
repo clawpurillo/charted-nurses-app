@@ -68,3 +68,4 @@ npx convex deploy
 ### Netlify
 Connect repo to Netlify. Set env vars in Netlify dashboard.
 See `netlify.toml` for build config.
+# deploy test
