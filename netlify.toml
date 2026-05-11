@@ -1,2 +1,6 @@
 [build.environment]
   SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_CONVEX_SITE_URL,NEXT_PUBLIC_CONVEX_URL,CONVEX_DEPLOYMENT"
+  NEXT_PUBLIC_CONVEX_URL = "https://joyous-guanaco-769.convex.cloud"
+  NEXT_PUBLIC_CONVEX_SITE_URL = "https://joyous-guanaco-769.convex.site"
+  NEXT_PUBLIC_APP_URL = "https://charted.japurillo.com"
+  CONVEX_DEPLOYMENT = "prod:joyous-guanaco-769"
