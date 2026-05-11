@@ -1,13 +1,23 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import RoomGrid from "@/components/RoomGrid";
 import { useAppContext } from "@/contexts/AppContext";
 
 export default function RoomsPage() {
   const roomsOverview = useQuery(api.entries.getRoomsOverview);
+  const userSettings = useQuery(api.entries.getUserSettings);
   const { activeRoom, onOpenRoomTimeline } = useAppContext();
+  const updateRooms = useMutation(api.entries.updateAssignedRooms);
+
+  const handleAddRoom = async (room: string) => {
+    const currentRooms = userSettings?.assignedRooms || [];
+    if (!currentRooms.includes(room)) {
+      const newRooms = [...currentRooms, room];
+      await updateRooms({ rooms: newRooms });
+    }
+  };
 
   return (
     <>
@@ -22,7 +32,7 @@ export default function RoomsPage() {
         rooms={roomsOverview || []}
         activeRoom={activeRoom}
         onSelectRoom={onOpenRoomTimeline}
-        onAddRoom={() => {}}
+        onAddRoom={handleAddRoom}
       />
     </>
   );

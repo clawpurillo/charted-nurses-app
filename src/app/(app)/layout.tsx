@@ -6,6 +6,7 @@ import { api } from "../../../convex/_generated/api";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
+import logo from "../logo.png";
 
 import LandingPage from "../LandingPage";
 import ShiftSetup from "../../components/ShiftSetup";
@@ -274,7 +275,7 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
           <header className="bg-white border-b border-slate-100 pt-safe-top shrink-0">
             <div className="flex items-center justify-between px-5 py-4">
               <div className="flex items-center gap-3">
-                <Image src="/logo.png" alt="Charted Logo" width={32} height={32} className="rounded-md shadow-sm" />
+                <Image src={logo} alt="Charted Logo" width={32} height={32} className="rounded-md shadow-sm" />
                 <div>
                   <h1 className="text-lg font-bold text-slate-900 tracking-tight leading-none mb-1">
                     Charted
@@ -331,22 +332,6 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
               ✕
             </button>
           </div>
-        )}
-
-        {/* FAB: Quick Entry (only on Rooms tab) */}
-        {isRoomsPage && (
-          <button
-            onClick={() => setIsQuickEntryOpen(true)}
-            className="absolute bottom-20 right-5 w-14 h-14 rounded-2xl bg-slate-900 text-white flex items-center justify-center shadow-lg shadow-slate-900/30 hover:bg-slate-800 active:scale-95 transition z-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2"
-            aria-label="Quick voice entry"
-          >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-              <line x1="12" y1="19" x2="12" y2="23" />
-              <line x1="8" y1="23" x2="16" y2="23" />
-            </svg>
-          </button>
         )}
 
         {/* Quick Entry Bottom Sheet */}

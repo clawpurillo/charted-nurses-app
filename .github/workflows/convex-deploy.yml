@@ -1,0 +1,32 @@
+name: Deploy Convex Backend
+
+on:
+  push:
+    branches: [main, dev]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy Convex (${{ github.ref_name }})
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Deploy Convex
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            CONVEX_DEPLOYMENT="prod:joyous-guanaco-769"
+          else
+            CONVEX_DEPLOYMENT="dev:content-iguana-935"
+          fi
+          echo "Deploying to $CONVEX_DEPLOYMENT"
+          npx convex deploy --cmd "echo Convex deployed"
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}

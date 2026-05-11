@@ -11,6 +11,7 @@ export default function EntryScreen() {
   const userSettings = useQuery(api.entries.getUserSettings);
   const canUseVoice = useQuery(api.entries.canUseVoiceEntry);
   const addEntry = useMutation(api.entries.addEntry);
+  const updateAssignedRooms = useMutation(api.entries.updateAssignedRooms);
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -178,7 +179,10 @@ export default function EntryScreen() {
             activeRoom={workingRoom}
             onSelectRoom={setActiveRoom}
             onAddRoom={async (room: string) => {
-              // Room addition in entry tab just adds to the picker; persistence handled by RoomPicker parent
+              if (!assignedRooms.includes(room)) {
+                const newRooms = [...assignedRooms, room];
+                await updateAssignedRooms({ rooms: newRooms });
+              }
             }}
           />
         </div>
