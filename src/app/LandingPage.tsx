@@ -25,6 +25,8 @@ export default function LandingPage() {
       } else {
         await signIn("password", { email, password, flow: "signIn" });
       }
+      // Redirect to /rooms after successful authentication
+      window.location.href = "/rooms";
     } catch (err: unknown) {
       const msg = (err as Error).message || "Something went wrong";
       if (msg.includes("InvalidSecret") || msg.includes("InvalidAccountId") || msg.includes("AccountNotFound")) {
