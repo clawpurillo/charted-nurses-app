@@ -6,7 +6,6 @@ import { api } from "../../../convex/_generated/api";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
-import logo from "../logo.png";
 
 import LandingPage from "../LandingPage";
 import ShiftSetup from "../../components/ShiftSetup";
@@ -275,7 +274,7 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
           <header className="bg-white border-b border-slate-100 pt-safe-top shrink-0">
             <div className="flex items-center justify-between px-5 py-4">
               <div className="flex items-center gap-3">
-                <Image src={logo} alt="Charted Logo" width={32} height={32} className="rounded-md shadow-sm" />
+                <Image src="/logo.png" alt="Charted Logo" width={32} height={32} className="rounded-md shadow-sm" />
                 <div>
                   <h1 className="text-lg font-bold text-slate-900 tracking-tight leading-none mb-1">
                     Charted
