@@ -11,6 +11,7 @@
 import type * as auth from "../auth.js";
 import type * as entries from "../entries.js";
 import type * as http from "../http.js";
+import type * as shiftSummaries from "../shiftSummaries.js";
 import type * as templates from "../templates.js";
 
 import type {
@@ -23,6 +24,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   entries: typeof entries;
   http: typeof http;
+  shiftSummaries: typeof shiftSummaries;
   templates: typeof templates;
 }>;
 

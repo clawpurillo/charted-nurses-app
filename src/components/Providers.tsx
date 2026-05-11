@@ -1,7 +1,7 @@
 "use client";
 
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
-import { ConvexReactClient, ConvexProvider } from "convex/react";
+import { ConvexReactClient } from "convex/react";
 import { ReactNode } from "react";
 import ErrorBoundary from "./ErrorBoundary";
 import ConvexConnectionStatus from "./ConvexConnectionStatus";
@@ -12,14 +12,14 @@ const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!, {
 });
 
 export default function Providers({ children }: { children: ReactNode }) {
+  // ConvexAuthProvider internally wraps children with ConvexProviderWithAuth,
+  // so a separate ConvexProvider wrapper is redundant and causes context conflicts.
   return (
     <ErrorBoundary>
-      <ConvexProvider client={convex}>
-        <ConvexAuthProvider client={convex}>
-          <ConvexConnectionStatus />
-          {children}
-        </ConvexAuthProvider>
-      </ConvexProvider>
+      <ConvexAuthProvider client={convex}>
+        <ConvexConnectionStatus />
+        {children}
+      </ConvexAuthProvider>
     </ErrorBoundary>
   );
 }
