@@ -49,19 +49,19 @@ export default function TemplateSearchPopup({
   };
 
   const categoryColors: Record<string, string> = {
-    assessment: "bg-blue-100 text-blue-700",
-    medication: "bg-amber-100 text-amber-700",
-    monitoring: "bg-green-100 text-green-700",
+    assessment: "bg-brand/10 text-brand",
+    medication: "bg-warning/10 text-warning",
+    monitoring: "bg-accent-new/10 text-accent-new",
   };
 
   return (
     <div className="flex flex-col h-full">
       {/* Header with search input */}
-      <div className="px-4 pt-3 pb-3 border-b border-slate-100">
+      <div className="px-4 pt-3 pb-3 border-b border-slate-200/50">
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
             <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -79,13 +79,13 @@ export default function TemplateSearchPopup({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search templates..."
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-slate-400 focus:bg-white transition"
+              className="w-full pl-10 pr-4 py-2.5 bg-surface dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition min-h-[48px]"
               aria-label="Search templates"
             />
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200 transition shrink-0"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-text-muted hover:text-text-secondary hover:bg-slate-100 dark:hover:bg-slate-700 transition shrink-0"
             aria-label="Close template search"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,10 +104,10 @@ export default function TemplateSearchPopup({
       <div className="flex-1 overflow-y-auto px-4 py-2" role="listbox" aria-label="Template results">
         {templates === undefined ? (
           <div className="flex items-center justify-center py-8">
-            <div className="w-6 h-6 border-2 border-slate-300 border-t-slate-500 rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-slate-200 dark:border-slate-600 border-t-brand rounded-full animate-spin" />
           </div>
         ) : templates.length === 0 ? (
-          <div className="text-center py-8 text-slate-400 text-sm">
+          <div className="text-center py-8 text-text-muted text-sm">
             No templates found
           </div>
         ) : (
@@ -116,28 +116,28 @@ export default function TemplateSearchPopup({
               <button
                 key={template._id}
                 onClick={() => handleSelectTemplate(template)}
-                className="w-full text-left p-3 rounded-xl border border-slate-100 hover:border-slate-300 hover:bg-slate-50 active:bg-slate-100 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                className="w-full text-left p-3 rounded-xl border border-slate-200 dark:border-slate-600 hover:border-brand/40 hover:bg-brand/5 dark:hover:bg-brand/10 active:bg-brand/10 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-1"
                 role="option"
                 aria-selected={false}
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="font-semibold text-sm text-slate-900">
+                  <span className="font-semibold text-sm text-text-primary">
                     {template.name}
                   </span>
-                  <span className="text-xs font-mono text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+                  <span className="text-xs font-mono text-text-muted bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">
                     {template.trigger}
                   </span>
                   {template.category && (
                     <span
                       className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                        categoryColors[template.category] ?? "bg-slate-100 text-slate-600"
+                        categoryColors[template.category] ?? "bg-slate-100 dark:bg-slate-700 text-text-secondary"
                       }`}
                     >
                       {template.category}
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-500 line-clamp-2">
+                <p className="text-xs text-text-secondary line-clamp-2">
                   {template.content}
                 </p>
               </button>

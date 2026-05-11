@@ -51,10 +51,10 @@ function DiffLine({
 
   if (type === "added") {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-lg p-2.5">
-        <span className="text-xs font-semibold text-green-700 mr-2">+ Added</span>
+      <div className="bg-accent-new/5 border border-accent-new/20 rounded-lg p-2.5">
+        <span className="text-xs font-semibold text-accent-new mr-2">+ Added</span>
         {lines.map((line, i) => (
-          <p key={i} className="text-sm text-green-800 mt-1 leading-relaxed">
+          <p key={i} className="text-sm text-accent-new/90 mt-1 leading-relaxed">
             {line}
           </p>
         ))}
@@ -64,10 +64,10 @@ function DiffLine({
 
   if (type === "removed") {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-2.5">
-        <span className="text-xs font-semibold text-red-700 mr-2">- Removed</span>
+      <div className="bg-danger/5 border border-danger/20 rounded-lg p-2.5">
+        <span className="text-xs font-semibold text-danger mr-2">- Removed</span>
         {lines.map((line, i) => (
-          <p key={i} className="text-sm text-red-800 mt-1 leading-relaxed line-through opacity-70">
+          <p key={i} className="text-sm text-danger/80 mt-1 leading-relaxed line-through opacity-70">
             {line}
           </p>
         ))}
@@ -76,10 +76,10 @@ function DiffLine({
   }
 
   return (
-    <div className="bg-slate-50 border border-slate-100 rounded-lg p-2.5">
-      <span className="text-xs font-semibold text-slate-500 mr-2">Unchanged</span>
+    <div className="bg-surface dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg p-2.5">
+      <span className="text-xs font-semibold text-text-muted mr-2">Unchanged</span>
       {lines.map((line, i) => (
-        <p key={i} className="text-sm text-slate-700 mt-1 leading-relaxed">
+        <p key={i} className="text-sm text-text-primary mt-1 leading-relaxed">
           {line}
         </p>
       ))}
@@ -113,8 +113,8 @@ function RoomDraftCard({
     <div
       className={`rounded-2xl border-2 transition-all duration-150 ${
         selected
-          ? "border-slate-900 bg-white shadow-md"
-          : "border-slate-200 bg-slate-50"
+          ? "border-brand/50 bg-white dark:bg-card shadow-md shadow-brand/10"
+          : "border-slate-200 dark:border-slate-600 bg-surface dark:bg-slate-800/50"
       }`}
     >
       {/* Header: room + checkbox */}
@@ -124,8 +124,8 @@ function RoomDraftCard({
             onClick={onToggle}
             className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition ${
               selected
-                ? "bg-slate-900 border-slate-900 text-white"
-                : "border-slate-300 bg-white"
+                ? "bg-brand border-brand text-white"
+                : "border-slate-300 dark:border-slate-500 bg-white dark:bg-slate-700"
             }`}
             aria-label={`Select room ${draft.room} for carry-forward`}
             aria-checked={selected}
@@ -137,11 +137,11 @@ function RoomDraftCard({
               </svg>
             )}
           </button>
-          <span className="text-base font-bold text-slate-900">
+          <span className="text-base font-bold text-text-primary">
             Room {draft.room}
           </span>
         </div>
-        <span className="text-xs text-slate-400 font-medium">
+        <span className="text-xs text-text-muted font-medium">
           {timeAgo(draft.latestEntry.timestamp)}
         </span>
       </div>
@@ -154,25 +154,25 @@ function RoomDraftCard({
             <span
               className={`inline-flex px-2 py-0.5 rounded text-xs font-semibold ${
                 draft.latestEntry.entryType === "voice"
-                  ? "bg-violet-100 text-violet-700"
-                  : "bg-slate-100 text-slate-600"
+                  ? "bg-brand/10 text-brand"
+                  : "bg-slate-100 dark:bg-slate-700 text-text-secondary"
               }`}
             >
               {draft.latestEntry.entryType === "voice" ? "Voice" : "Text"}
             </span>
             {draft.latestEntry.fdarCategory && (
-              <span className="inline-flex px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-700">
+              <span className="inline-flex px-2 py-0.5 rounded text-xs font-semibold bg-warning/10 text-warning">
                 {draft.latestEntry.fdarCategory.toUpperCase()}
               </span>
             )}
           </div>
 
           {/* Previous entry text */}
-          <div className="bg-white border border-slate-200 rounded-xl p-3">
-            <p className="text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">
+          <div className="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl p-3">
+            <p className="text-xs font-semibold text-text-muted mb-1.5 uppercase tracking-wide">
               Previous entry
             </p>
-            <p className="text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm text-text-primary leading-relaxed whitespace-pre-wrap">
               {draft.latestEntry.description}
             </p>
           </div>
@@ -180,7 +180,7 @@ function RoomDraftCard({
           {/* Diff section (only when there is a previous entry to compare) */}
           {draft.previousEntry && (
             <div>
-              <p className="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">
+              <p className="text-xs font-semibold text-text-muted mb-2 uppercase tracking-wide">
                 Changes since last time
               </p>
               <div className="space-y-2">
@@ -283,26 +283,26 @@ export default function CarryForwardPrompt({
       aria-modal="true"
       aria-label="Carry forward previous shift entries"
     >
-      <div className="absolute inset-x-0 bottom-0 max-w-lg mx-auto bg-white rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col">
+      <div className="absolute inset-x-0 bottom-0 max-w-lg mx-auto bg-white dark:bg-card rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col">
         {/* Drag handle */}
         <div className="flex items-center justify-center py-3 shrink-0">
-          <div className="w-10 h-1 rounded-full bg-slate-300" />
+          <div className="w-10 h-1 rounded-full bg-brand/30" />
         </div>
 
         {/* Header */}
-        <div className="px-5 pb-3 border-b border-slate-100 shrink-0">
+        <div className="px-5 pb-3 border-b border-slate-200/50 shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+              <h2 className="text-xl font-extrabold text-text-primary tracking-tight">
                 Carry Forward
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-text-secondary mt-0.5">
                 {drafts.length} previous {drafts.length === 1 ? "entry" : "entries"} found
               </p>
             </div>
             <button
               onClick={handleDismiss}
-              className="w-12 h-12 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+              className="w-12 h-12 rounded-xl flex items-center justify-center text-text-muted hover:text-text-secondary hover:bg-slate-100 dark:hover:bg-slate-700 transition"
               aria-label="Dismiss carry-forward prompt"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -325,18 +325,18 @@ export default function CarryForwardPrompt({
         </div>
 
         {/* Footer actions */}
-        <div className="px-5 py-4 border-t border-slate-100 shrink-0 space-y-3 pb-safe">
+        <div className="px-5 py-4 border-t border-slate-200/50 shrink-0 space-y-3 pb-safe">
           {/* Select / Deselect all */}
           <div className="flex items-center justify-between">
             <button
               onClick={selectAll}
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 transition"
+              className="text-xs font-semibold text-brand hover:text-brand/80 transition"
             >
               Select all
             </button>
             <button
               onClick={deselectAll}
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 transition"
+              className="text-xs font-semibold text-text-secondary hover:text-text-primary transition"
             >
               Deselect all
             </button>
@@ -346,14 +346,14 @@ export default function CarryForwardPrompt({
           <div className="flex gap-3">
             <button
               onClick={handleDismiss}
-              className="flex-1 py-3.5 bg-slate-100 text-slate-700 font-semibold text-sm rounded-xl hover:bg-slate-200 transition min-h-[48px]"
+              className="flex-1 py-3.5 bg-slate-100 dark:bg-slate-700 text-text-primary font-semibold text-sm rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition min-h-[48px]"
             >
               Skip for now
             </button>
             <button
               onClick={handleAccept}
               disabled={selectedRooms.size === 0 || loading}
-              className="flex-1 py-3.5 bg-slate-900 text-white font-semibold text-sm rounded-xl hover:bg-slate-800 disabled:opacity-50 transition min-h-[48px]"
+              className="flex-1 py-3.5 bg-brand text-white font-semibold text-sm rounded-xl hover:bg-brand/90 disabled:opacity-50 transition min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
             >
               {loading ? "Carrying forward..." : `Carry ${selectedRooms.size} forward`}
             </button>

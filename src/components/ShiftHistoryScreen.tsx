@@ -130,7 +130,7 @@ function ShiftTimelineSheet({
     >
       <div
         ref={sheetRef}
-        className="absolute bottom-0 left-0 right-0 max-w-lg mx-auto bg-white rounded-t-3xl shadow-2xl transition-transform duration-200 ease-out will-change-transform"
+        className="absolute bottom-0 left-0 right-0 max-w-lg mx-auto bg-white dark:bg-card rounded-t-3xl shadow-2xl transition-transform duration-200 ease-out will-change-transform"
         style={{ maxHeight: "80vh" }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -141,27 +141,27 @@ function ShiftTimelineSheet({
           data-drag-handle
           className="flex items-center justify-center py-3 cursor-grab active:cursor-grabbing shrink-0"
         >
-          <div className="w-10 h-1 rounded-full bg-slate-300" />
+          <div className="w-10 h-1 rounded-full bg-brand/30" />
         </div>
 
         {/* Header */}
-        <div className="px-5 pb-3 border-b border-slate-100 shrink-0">
+        <div className="px-5 pb-3 border-b border-slate-200/50 shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+              <h2 className="text-lg font-extrabold text-text-primary tracking-tight">
                 {dateDisplay}
               </h2>
-              <p className="text-xs text-slate-500 font-medium mt-0.5">
+              <p className="text-xs text-text-secondary font-medium mt-0.5">
                 {shiftType === "day" ? "\u2600\uFE0F" : "\uD83C\uDF19"}{" "}
-                {shiftType === "day" ? "Day" : "Night"} Shift ·{" "}
+                {shiftType === "day" ? "Day" : "Night"} Shift &middot;{" "}
                 {allEntries.length}{" "}
-                {allEntries.length === 1 ? "entry" : "entries"} ·{" "}
+                {allEntries.length === 1 ? "entry" : "entries"} &middot;{" "}
                 {byRoom.size} {byRoom.size === 1 ? "room" : "rooms"}
               </p>
             </div>
             <button
               onClick={handleClose}
-              className="w-12 h-12 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+              className="w-12 h-12 rounded-xl flex items-center justify-center text-text-muted hover:text-text-secondary hover:bg-slate-100 dark:hover:bg-slate-700 transition"
               aria-label="Close timeline"
             >
               <svg
@@ -187,7 +187,7 @@ function ShiftTimelineSheet({
           style={{ maxHeight: "calc(80vh - 100px)" }}
         >
           {allEntries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-10 text-slate-400">
+            <div className="flex flex-col items-center justify-center py-10 text-text-muted">
               <p className="text-2xl mb-2">📋</p>
               <p className="text-sm">No entries for this shift</p>
             </div>
@@ -195,36 +195,35 @@ function ShiftTimelineSheet({
             <div className="space-y-5">
               {roomEntries.map(([room, entries]) => (
                 <div key={room}>
-                  <h3 className="text-sm font-bold text-slate-700 mb-2">
+                  <h3 className="text-sm font-bold text-text-primary mb-2">
                     Room {room}
                   </h3>
                   <div className="relative">
-                    <div className="absolute left-[11px] top-2 bottom-2 w-px bg-slate-200" />
+                    {/* Gradient timeline line */}
+                    <div className="absolute left-[11px] top-2 bottom-2 w-px bg-gradient-to-b from-brand/30 to-brand/10" />
                     <div className="space-y-3 relative">
                       {entries.map((entry) => (
                         <div key={entry._id} className="relative flex gap-3">
                           <div className="relative z-10 w-6 flex justify-center shrink-0 pt-2">
                             <div
-                              className={`w-2 h-2 rounded-full ring-4 ring-white ${
+                              className={`w-2 h-2 rounded-full ring-4 ring-white dark:ring-card ${
                                 entry.entryType === "voice"
-                                  ? "bg-blue-400"
-                                  : "bg-slate-400"
+                                  ? "bg-brand"
+                                  : "bg-text-muted"
                               }`}
                             />
                           </div>
-                          <div className="flex-1 bg-slate-50 border border-slate-100 rounded-2xl p-3 shadow-sm">
+                          <div className="flex-1 bg-card dark:bg-slate-700/50 border border-slate-200/50 dark:border-slate-600 rounded-2xl p-3 shadow-sm">
                             <div className="flex items-center justify-between mb-1">
                               <div className="flex items-center gap-2">
                                 {entry.entryType === "voice" && (
-                                  <span className="text-xs">
-                                    🎙️
-                                  </span>
+                                  <span className="text-xs">🎙️</span>
                                 )}
-                                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                                <span className="text-[10px] font-semibold text-text-muted uppercase tracking-wider">
                                   {entry.entryType}
                                 </span>
                               </div>
-                              <span className="text-xs font-medium text-slate-400">
+                              <span className="text-xs font-medium text-text-muted font-mono">
                                 {new Date(
                                   entry.timestamp
                                 ).toLocaleTimeString("en-US", {
@@ -234,7 +233,7 @@ function ShiftTimelineSheet({
                                 })}
                               </span>
                             </div>
-                            <p className="text-sm text-slate-700 leading-relaxed">
+                            <p className="text-sm text-text-primary leading-relaxed">
                               {entry.description}
                             </p>
                           </div>
@@ -276,13 +275,13 @@ export default function ShiftHistoryScreen({
   // Loading state (only show spinner during normal loading window)
   if (pastShifts === undefined && !queryTimedOut) {
     return (
-      <div className="flex flex-col h-screen bg-slate-50 font-sans overflow-hidden">
-        <header className="bg-white border-b border-slate-100 pt-safe-top shrink-0">
+      <div className="flex flex-col h-screen bg-surface font-sans overflow-hidden">
+        <header className="bg-white dark:bg-card border-b border-slate-200/50 pt-safe-top shrink-0">
           <div className="flex items-center gap-4 px-5 py-4">
-            <div className="w-10 h-10 rounded-xl bg-slate-100 animate-pulse" />
+            <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-700 animate-pulse" />
             <div className="flex-1 space-y-2">
-              <div className="h-5 bg-slate-100 rounded w-32 animate-pulse" />
-              <div className="h-3 bg-slate-100 rounded w-48 animate-pulse" />
+              <div className="h-5 bg-slate-200 dark:bg-slate-700 rounded w-32 animate-pulse" />
+              <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-48 animate-pulse" />
             </div>
           </div>
         </header>
@@ -290,7 +289,7 @@ export default function ShiftHistoryScreen({
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className="h-20 bg-slate-100 rounded-2xl animate-pulse"
+              className="h-20 bg-slate-200 dark:bg-slate-700 rounded-2xl animate-pulse"
             />
           ))}
         </div>
@@ -303,12 +302,12 @@ export default function ShiftHistoryScreen({
   // Timed-out state: query took too long, show actionable error
   if (queryTimedOut) {
     return (
-      <div className="flex flex-col h-screen bg-slate-50 font-sans overflow-hidden">
-        <header className="bg-white border-b border-slate-100 pt-safe-top shrink-0">
+      <div className="flex flex-col h-screen bg-surface font-sans overflow-hidden">
+        <header className="bg-white dark:bg-card border-b border-slate-200/50 pt-safe-top shrink-0">
           <div className="flex items-center gap-4 px-5 py-4">
             <button
               onClick={onBack}
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-100 transition min-h-[48px] min-w-[48px]"
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:bg-slate-100 dark:hover:bg-slate-700 transition min-h-[48px] min-w-[48px]"
               aria-label="Back to dashboard"
             >
               <svg
@@ -326,25 +325,25 @@ export default function ShiftHistoryScreen({
               </svg>
             </button>
             <div>
-              <h1 className="text-lg font-bold text-slate-900 tracking-tight leading-none mb-0.5">
+              <h1 className="text-lg font-extrabold text-text-primary tracking-tight leading-none mb-0.5">
                 Shift History
               </h1>
-              <p className="text-xs text-red-500 font-medium">Load timed out</p>
+              <p className="text-xs text-danger font-medium">Load timed out</p>
             </div>
           </div>
         </header>
         <div className="flex-1 flex flex-col items-center justify-center px-5 text-center">
           <p className="text-4xl mb-4">⚠️</p>
-          <h2 className="text-lg font-bold text-slate-700 mb-1">
+          <h2 className="text-lg font-bold text-text-primary mb-1">
             Unable to load history
           </h2>
-          <p className="text-sm text-slate-400 max-w-xs mb-4">
+          <p className="text-sm text-text-muted max-w-xs mb-4">
             The server took too long to respond. Try pulling down to refresh or
             check your connection.
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-800 transition"
+            className="px-4 py-2 bg-brand text-white text-sm font-semibold rounded-lg hover:bg-brand/90 transition min-h-[48px]"
           >
             Reload Page
           </button>
@@ -354,13 +353,13 @@ export default function ShiftHistoryScreen({
   }
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50 font-sans overflow-hidden">
+    <div className="flex flex-col h-screen bg-surface font-sans overflow-hidden">
       {/* Header */}
-      <header className="bg-white border-b border-slate-100 pt-safe-top shrink-0">
+      <header className="bg-white dark:bg-card border-b border-slate-200/50 pt-safe-top shrink-0">
         <div className="flex items-center gap-4 px-5 py-4">
           <button
             onClick={onBack}
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-100 transition min-h-[48px] min-w-[48px]"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:bg-slate-100 dark:hover:bg-slate-700 transition min-h-[48px] min-w-[48px]"
             aria-label="Back to dashboard"
           >
             <svg
@@ -378,10 +377,10 @@ export default function ShiftHistoryScreen({
             </svg>
           </button>
           <div>
-            <h1 className="text-lg font-bold text-slate-900 tracking-tight leading-none mb-0.5">
+            <h1 className="text-lg font-extrabold text-text-primary tracking-tight leading-none mb-0.5">
               Shift History
             </h1>
-            <p className="text-xs text-slate-500 font-medium">
+            <p className="text-xs text-text-secondary font-medium">
               {shifts.length} {shifts.length === 1 ? "shift" : "shifts"} recorded
             </p>
           </div>
@@ -393,10 +392,10 @@ export default function ShiftHistoryScreen({
         {shifts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <p className="text-4xl mb-4">📅</p>
-            <h2 className="text-lg font-bold text-slate-700 mb-1">
+            <h2 className="text-lg font-bold text-text-primary mb-1">
               No past shifts
             </h2>
-            <p className="text-sm text-slate-400 max-w-xs">
+            <p className="text-sm text-text-muted max-w-xs">
               Your shift history will appear here once you complete your first
               shift.
             </p>
@@ -422,7 +421,7 @@ export default function ShiftHistoryScreen({
                       shiftType: shift.shiftType,
                     })
                   }
-                  className="w-full bg-white border border-slate-100 rounded-2xl p-4 shadow-sm hover:border-slate-200 hover:shadow-md transition-all text-left min-h-[80px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-inset active:scale-[0.98]"
+                  className="w-full bg-card dark:bg-slate-700/50 border border-slate-200/50 dark:border-slate-600 rounded-2xl p-4 shadow-sm hover:border-brand/30 hover:shadow-md transition-all text-left min-h-[80px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-inset active:scale-[0.98]"
                   role="listitem"
                   aria-label={`${dateDisplay} ${shift.shiftType} shift, ${shift.count} entries`}
                 >
@@ -432,25 +431,25 @@ export default function ShiftHistoryScreen({
                         <span
                           className={`text-xs font-bold px-2 py-0.5 rounded-md ${
                             shift.shiftType === "day"
-                              ? "bg-amber-100 text-amber-700"
-                              : "bg-indigo-100 text-indigo-700"
+                              ? "bg-warning/10 text-warning"
+                              : "bg-brand-soft text-brand dark:bg-brand/20"
                           }`}
                         >
                           {shift.shiftType === "day"
                             ? "\u2600\uFE0F Day"
                             : "\uD83C\uDF19 Night"}
                         </span>
-                        <span className="text-sm font-bold text-slate-900">
+                        <span className="text-sm font-bold text-text-primary">
                           {dateDisplay}
                         </span>
                       </div>
-                      <div className="text-xs text-slate-500 font-medium">
+                      <div className="text-xs text-text-secondary font-medium">
                         {shift.count}{" "}
                         {shift.count === 1 ? "entry" : "entries"}
                       </div>
                     </div>
                     <svg
-                      className="w-5 h-5 text-slate-300 shrink-0 mt-1"
+                      className="w-5 h-5 text-text-muted shrink-0 mt-1"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"

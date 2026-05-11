@@ -28,13 +28,13 @@ function CopyButton({ text, label }: { text: string; label?: string }) {
   return (
     <button
       onClick={handleCopy}
-      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 min-h-[36px] ${
         copied
-          ? "bg-green-100 text-green-700"
-          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+          ? "bg-accent-new/10 text-accent-new"
+          : "bg-slate-100 dark:bg-slate-700 text-text-secondary hover:bg-slate-200 dark:hover:bg-slate-600"
       }`}
     >
-      {copied ? "✓ Copied" : label ?? "Copy"}
+      {copied ? "\u2713 Copied" : label ?? "Copy"}
     </button>
   );
 }
@@ -80,7 +80,7 @@ export default function ShiftSummaryScreen({ onNavigate }: ShiftSummaryScreenPro
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch {
-      // Error saving — show brief feedback
+      // Error saving -- show brief feedback
     } finally {
       setIsSaving(false);
     }
@@ -99,15 +99,15 @@ export default function ShiftSummaryScreen({ onNavigate }: ShiftSummaryScreenPro
       day: "numeric",
     });
 
-    lines.push(`${dateFormatted} — ${shiftLabel}`);
+    lines.push(`${dateFormatted} \u2014 ${shiftLabel}`);
     lines.push(data.background);
     lines.push("");
 
-    lines.push("═══ SITUATION ═══");
+    lines.push("\u2550\u2550\u2550 SITUATION \u2550\u2550\u2550");
     lines.push(data.situation || "No entries recorded this shift.");
     lines.push("");
 
-    lines.push("═══ ASSESSMENT ═══");
+    lines.push("\u2550\u2550\u2550 ASSESSMENT \u2550\u2550\u2550");
     data.suggestedTasks.forEach((task, i) => {
       const checked = tasks.has(i) ? "[x]" : "[ ]";
       lines.push(`${checked} ${task}`);
@@ -115,7 +115,7 @@ export default function ShiftSummaryScreen({ onNavigate }: ShiftSummaryScreenPro
     lines.push("");
 
     if (notes.trim()) {
-      lines.push("═══ RECOMMENDATION / HANDOVER NOTES ═══");
+      lines.push("\u2550\u2550\u2550 RECOMMENDATION / HANDOVER NOTES \u2550\u2550\u2550");
       lines.push(notes.trim());
       lines.push("");
     }
@@ -131,8 +131,8 @@ export default function ShiftSummaryScreen({ onNavigate }: ShiftSummaryScreenPro
     return (
       <div className="flex-1 overflow-y-auto px-5 pt-4">
         <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
-          <div className="w-10 h-10 rounded-full border-4 border-slate-200 border-t-slate-900 animate-spin" />
-          <p className="text-sm text-slate-500">Loading shift summary...</p>
+          <div className="w-10 h-10 rounded-full border-4 border-slate-200 dark:border-slate-700 border-t-brand animate-spin" />
+          <p className="text-sm text-text-secondary">Loading shift summary...</p>
         </div>
       </div>
     );
@@ -142,20 +142,20 @@ export default function ShiftSummaryScreen({ onNavigate }: ShiftSummaryScreenPro
     return (
       <div className="flex-1 overflow-y-auto px-5 pt-4">
         <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
-          <svg className="w-16 h-16 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-16 h-16 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
             <polyline points="14 2 14 8 20 8" />
             <line x1="16" y1="13" x2="8" y2="13" />
             <line x1="16" y1="17" x2="8" y2="17" />
           </svg>
-          <h2 className="text-lg font-bold text-slate-800">No Entries Yet</h2>
-          <p className="text-sm text-slate-500 max-w-xs">
+          <h2 className="text-lg font-bold text-text-primary">No Entries Yet</h2>
+          <p className="text-sm text-text-secondary max-w-xs">
             Start recording entries to generate your shift summary.
           </p>
           {onNavigate && (
             <button
               onClick={() => onNavigate("rooms")}
-              className="mt-4 px-6 py-3 bg-slate-900 text-white text-sm font-semibold rounded-xl hover:bg-slate-800 transition"
+              className="mt-4 px-6 py-3 bg-brand text-white text-sm font-semibold rounded-xl hover:bg-brand/90 transition min-h-[48px]"
             >
               Go to My Rooms
             </button>
@@ -176,29 +176,29 @@ export default function ShiftSummaryScreen({ onNavigate }: ShiftSummaryScreenPro
     <div className="flex-1 overflow-y-auto pb-40 px-5 pt-4">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-slate-900">Shift Summary</h1>
-        <p className="text-sm text-slate-500">{dateFormatted} · {shiftLabel}</p>
+        <h1 className="text-xl font-extrabold text-text-primary tracking-tight">Shift Summary</h1>
+        <p className="text-sm text-text-secondary">{dateFormatted} &middot; {shiftLabel}</p>
       </div>
 
-      {/* SITUATION — Auto-generated from latest entries per room */}
+      {/* SITUATION \u2014 Auto-generated from latest entries per room */}
       <section className="mb-6" aria-labelledby="situation-heading">
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-2 h-2 rounded-full bg-blue-500" />
-          <h2 id="situation-heading" className="text-sm font-bold text-slate-700 uppercase tracking-wide">
+          <div className="w-2 h-2 rounded-full bg-brand" />
+          <h2 id="situation-heading" className="text-sm font-bold text-text-primary uppercase tracking-wide">
             Situation
           </h2>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-3">
+        <div className="bg-card dark:bg-slate-700/50 rounded-2xl border border-slate-200/50 dark:border-slate-600 p-4 space-y-3">
           {summaryData.rooms.map((room) => {
             const latestEntry = summaryData.entries
               .filter((e) => e.room === room)
               .sort((a, b) => b.timestamp - a.timestamp)[0];
             return (
               <div key={room} className="flex gap-3">
-                <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-md shrink-0 h-fit">
+                <span className="px-2 py-0.5 bg-brand/10 text-brand text-xs font-bold rounded-md shrink-0 h-fit">
                   {room}
                 </span>
-                <p className="text-sm text-slate-700 leading-relaxed">
+                <p className="text-sm text-text-primary leading-relaxed">
                   {latestEntry?.description}
                 </p>
               </div>
@@ -207,37 +207,37 @@ export default function ShiftSummaryScreen({ onNavigate }: ShiftSummaryScreenPro
         </div>
       </section>
 
-      {/* BACKGROUND — Entry count summary */}
+      {/* BACKGROUND \u2014 Entry count summary */}
       <section className="mb-6" aria-labelledby="background-heading">
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-2 h-2 rounded-full bg-amber-500" />
-          <h2 id="background-heading" className="text-sm font-bold text-slate-700 uppercase tracking-wide">
+          <div className="w-2 h-2 rounded-full bg-warning" />
+          <h2 id="background-heading" className="text-sm font-bold text-text-primary uppercase tracking-wide">
             Background
           </h2>
         </div>
-        <div className="bg-slate-50 rounded-2xl p-4">
-          <p className="text-sm text-slate-700 leading-relaxed">{summaryData.background}</p>
-          <div className="flex gap-3 mt-3 text-xs font-medium text-slate-500">
+        <div className="bg-surface dark:bg-slate-700/30 rounded-2xl p-4 border border-slate-200/50 dark:border-slate-600">
+          <p className="text-sm text-text-primary leading-relaxed">{summaryData.background}</p>
+          <div className="flex gap-3 mt-3 text-xs font-medium text-text-secondary">
             <span>{summaryData.totalEntries} total</span>
-            <span>·</span>
+            <span>&middot;</span>
             <span>{summaryData.voiceCount} voice</span>
-            <span>·</span>
+            <span>&middot;</span>
             <span>{summaryData.textCount} text</span>
-            <span>·</span>
+            <span>&middot;</span>
             <span>{summaryData.rooms.length} rooms</span>
           </div>
         </div>
       </section>
 
-      {/* ASSESSMENT — Task checkboxes */}
+      {/* ASSESSMENT \u2014 Task checkboxes */}
       <section className="mb-6" aria-labelledby="assessment-heading">
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-2 h-2 rounded-full bg-green-500" />
-          <h2 id="assessment-heading" className="text-sm font-bold text-slate-700 uppercase tracking-wide">
+          <div className="w-2 h-2 rounded-full bg-accent-new" />
+          <h2 id="assessment-heading" className="text-sm font-bold text-text-primary uppercase tracking-wide">
             Assessment
           </h2>
         </div>
-        <div className="bg-white rounded-2xl border border-slate-200 p-4 space-y-2">
+        <div className="bg-card dark:bg-slate-700/50 rounded-2xl border border-slate-200/50 dark:border-slate-600 p-4 space-y-2">
           {summaryData.suggestedTasks.map((task, i) => (
             <label
               key={i}
@@ -247,13 +247,13 @@ export default function ShiftSummaryScreen({ onNavigate }: ShiftSummaryScreenPro
                 type="checkbox"
                 checked={completedTasks.has(i)}
                 onChange={() => toggleTask(i)}
-                className="mt-0.5 w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 focus:ring-offset-0 cursor-pointer"
+                className="mt-0.5 w-4 h-4 rounded border-slate-300 dark:border-slate-500 text-brand focus:ring-brand focus:ring-offset-0 cursor-pointer"
               />
               <span
                 className={`text-sm leading-snug transition-colors ${
                   completedTasks.has(i)
-                    ? "text-slate-400 line-through"
-                    : "text-slate-700 group-hover:text-slate-900"
+                    ? "text-text-muted line-through"
+                    : "text-text-primary group-hover:text-text-secondary"
                 }`}
               >
                 {task}
@@ -263,11 +263,11 @@ export default function ShiftSummaryScreen({ onNavigate }: ShiftSummaryScreenPro
         </div>
       </section>
 
-      {/* RECOMMENDATION — Free-text handover notes */}
+      {/* RECOMMENDATION \u2014 Free-text handover notes */}
       <section className="mb-6" aria-labelledby="recommendation-heading">
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-2 h-2 rounded-full bg-purple-500" />
-          <h2 id="recommendation-heading" className="text-sm font-bold text-slate-700 uppercase tracking-wide">
+          <div className="w-2 h-2 rounded-full bg-brand" />
+          <h2 id="recommendation-heading" className="text-sm font-bold text-text-primary uppercase tracking-wide">
             Recommendation
           </h2>
         </div>
@@ -276,7 +276,7 @@ export default function ShiftSummaryScreen({ onNavigate }: ShiftSummaryScreenPro
           onChange={(e) => setHandoverNotes(e.target.value)}
           placeholder="Add handover notes for the incoming shift..."
           rows={5}
-          className="w-full px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm leading-relaxed focus:outline-none focus:border-slate-400 focus:bg-slate-50 transition resize-none placeholder:text-slate-400"
+          className="w-full px-4 py-3 bg-card dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-2xl text-sm text-text-primary leading-relaxed focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition resize-none placeholder:text-text-muted"
           aria-label="Handover notes"
         />
       </section>
@@ -284,10 +284,10 @@ export default function ShiftSummaryScreen({ onNavigate }: ShiftSummaryScreenPro
       {/* Actions */}
       <div className="space-y-3">
         {/* Copy to clipboard */}
-        <div className="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
+        <div className="flex items-center justify-between bg-surface dark:bg-slate-700/30 rounded-2xl p-4 border border-slate-200/50 dark:border-slate-600">
           <div>
-            <p className="text-sm font-semibold text-slate-700">Export Summary</p>
-            <p className="text-xs text-slate-500">Copy formatted SBAR text to clipboard</p>
+            <p className="text-sm font-semibold text-text-primary">Export Summary</p>
+            <p className="text-xs text-text-secondary">Copy formatted SBAR text to clipboard</p>
           </div>
           <CopyButton text={exportText} label="Copy All" />
         </div>
@@ -296,10 +296,10 @@ export default function ShiftSummaryScreen({ onNavigate }: ShiftSummaryScreenPro
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className={`w-full py-4 rounded-2xl text-base font-semibold transition ${
+          className={`w-full py-4 rounded-2xl text-base font-semibold transition min-h-[48px] ${
             saveSuccess
-              ? "bg-green-600 text-white"
-              : "bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-50"
+              ? "bg-accent-new text-white"
+              : "bg-brand text-white hover:bg-brand/90 hover:shadow-lg hover:shadow-brand/30 disabled:opacity-50 active:scale-[0.98]"
           }`}
         >
           {isSaving ? (
@@ -308,7 +308,7 @@ export default function ShiftSummaryScreen({ onNavigate }: ShiftSummaryScreenPro
               Saving...
             </span>
           ) : saveSuccess ? (
-            "✓ Summary Saved"
+            "\u2713 Summary Saved"
           ) : (
             "Save Summary"
           )}
