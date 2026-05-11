@@ -76,20 +76,20 @@ export default function QuickPresets({ onSelect, onCancel }: QuickPresetsProps) 
 
     return chars.map((char, i) =>
       matches.has(i)
-        ? `<mark class="font-semibold text-slate-900">${char}</mark>`
-        : `<span class="text-slate-500">${char}</span>`
+        ? `<mark class="font-semibold text-text-primary">${char}</mark>`
+        : `<span class="text-text-secondary">${char}</span>`
     ).join("");
   };
 
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-5 py-3 border-b border-slate-100 shrink-0">
+      <div className="px-5 py-3 border-b border-slate-200/50 shrink-0">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-bold text-slate-900">Quick Presets</h2>
+          <h2 className="text-lg font-extrabold text-text-primary tracking-tight">Quick Presets</h2>
           <button
             onClick={onCancel}
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-text-muted hover:text-text-secondary hover:bg-slate-100 dark:hover:bg-slate-700 transition"
             aria-label="Close presets"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,7 +101,7 @@ export default function QuickPresets({ onSelect, onCancel }: QuickPresetsProps) 
         {/* Search input */}
         <div className="relative">
           <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -114,21 +114,21 @@ export default function QuickPresets({ onSelect, onCancel }: QuickPresetsProps) 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search presets..."
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-slate-400 focus:bg-white transition min-h-[44px]"
+            className="w-full pl-10 pr-4 py-2.5 bg-surface dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition min-h-[48px]"
             aria-label="Search presets"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-slate-300 text-white text-xs flex items-center justify-center hover:bg-slate-400 transition"
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-slate-300 dark:bg-slate-500 text-white text-xs flex items-center justify-center hover:bg-slate-400 transition"
               aria-label="Clear search"
             >
-              ×
+              &times;
             </button>
           )}
         </div>
         {searchQuery.length > 0 && searchQuery.length < 2 && (
-          <p className="text-xs text-slate-400 mt-1.5">Type 2+ characters to search</p>
+          <p className="text-xs text-text-muted mt-1.5">Type 2+ characters to search</p>
         )}
       </div>
 
@@ -136,7 +136,7 @@ export default function QuickPresets({ onSelect, onCancel }: QuickPresetsProps) 
       <div className="flex-1 overflow-y-auto px-5 py-3">
         {displayPresets.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-text-muted">
               {searchQuery ? "No matching presets" : "No presets yet"}
             </p>
           </div>
@@ -146,30 +146,34 @@ export default function QuickPresets({ onSelect, onCancel }: QuickPresetsProps) 
               <button
                 key={preset.id}
                 onClick={() => handlePresetTap(preset)}
-                className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 hover:bg-slate-100 rounded-xl text-left transition group min-h-[48px]"
+                className="w-full flex items-center justify-between px-4 py-3 bg-surface dark:bg-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl text-left transition group min-h-[48px]"
                 aria-label={`Insert preset: ${preset.name}`}
               >
                 <div className="flex items-center gap-3">
-                  {/* Icon */}
-                  <span className="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center text-sm shrink-0">
+                  {/* Icon with brand accent */}
+                  <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0 ${
+                    preset.isDefault
+                      ? "bg-brand/10 text-brand"
+                      : "bg-slate-100 dark:bg-slate-600 text-text-secondary"
+                  }`}>
                     {preset.isDefault ? (
-                      <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
                     ) : (
-                      <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                       </svg>
                     )}
                   </span>
                   <div>
                     <p
-                      className="text-sm font-semibold text-slate-900"
+                      className="text-sm font-semibold text-text-primary"
                       dangerouslySetInnerHTML={{
                         __html: highlightMatch(preset.name, searchQuery),
                       }}
                     />
-                    <p className="text-xs text-slate-400 truncate max-w-[200px]">
+                    <p className="text-xs text-text-muted truncate max-w-[200px]">
                       {preset.text}
                     </p>
                   </div>
@@ -178,7 +182,7 @@ export default function QuickPresets({ onSelect, onCancel }: QuickPresetsProps) 
                 {!preset.isDefault && (
                   <button
                     onClick={(e) => handleDeletePreset(e, preset.id)}
-                    className="opacity-0 group-hover:opacity-100 w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition"
+                    className="opacity-0 group-hover:opacity-100 w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-danger hover:bg-danger/5 transition"
                     aria-label={`Delete preset: ${preset.name}`}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,7 +197,7 @@ export default function QuickPresets({ onSelect, onCancel }: QuickPresetsProps) 
       </div>
 
       {/* Add custom preset */}
-      <div className="px-5 py-3 border-t border-slate-100 shrink-0">
+      <div className="px-5 py-3 border-t border-slate-200/50 shrink-0">
         {showAddForm ? (
           <div className="space-y-2">
             <input
@@ -201,7 +205,7 @@ export default function QuickPresets({ onSelect, onCancel }: QuickPresetsProps) 
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder="Preset name (e.g., BP checked)"
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-slate-400 min-h-[44px]"
+              className="w-full px-3 py-2.5 bg-surface dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand min-h-[48px]"
               aria-label="Preset name"
             />
             <input
@@ -209,7 +213,7 @@ export default function QuickPresets({ onSelect, onCancel }: QuickPresetsProps) 
               value={newText}
               onChange={(e) => setNewText(e.target.value)}
               placeholder="Text to insert (e.g., Blood pressure checked and recorded)"
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-slate-400 min-h-[44px]"
+              className="w-full px-3 py-2.5 bg-surface dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand min-h-[48px]"
               aria-label="Preset text"
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleAddPreset();
@@ -219,7 +223,7 @@ export default function QuickPresets({ onSelect, onCancel }: QuickPresetsProps) 
               <button
                 onClick={handleAddPreset}
                 disabled={!newName.trim() || !newText.trim()}
-                className="flex-1 py-2.5 bg-slate-900 text-white font-semibold text-sm rounded-xl hover:bg-slate-800 disabled:opacity-50 transition min-h-[44px]"
+                className="flex-1 py-2.5 bg-brand text-white font-semibold text-sm rounded-xl hover:bg-brand/90 disabled:opacity-50 transition min-h-[48px]"
               >
                 Save Preset
               </button>
@@ -229,7 +233,7 @@ export default function QuickPresets({ onSelect, onCancel }: QuickPresetsProps) 
                   setNewName("");
                   setNewText("");
                 }}
-                className="px-4 py-2.5 bg-slate-100 text-slate-600 font-semibold text-sm rounded-xl hover:bg-slate-200 transition min-h-[44px]"
+                className="px-4 py-2.5 bg-slate-100 dark:bg-slate-700 text-text-secondary font-semibold text-sm rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition min-h-[48px]"
               >
                 Cancel
               </button>
@@ -238,7 +242,7 @@ export default function QuickPresets({ onSelect, onCancel }: QuickPresetsProps) 
         ) : (
           <button
             onClick={() => setShowAddForm(true)}
-            className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-200 rounded-xl text-sm font-semibold text-slate-400 hover:text-slate-600 hover:border-slate-300 transition min-h-[48px]"
+            className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-brand/30 rounded-xl text-sm font-semibold text-brand/70 hover:text-brand hover:border-brand transition min-h-[48px]"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

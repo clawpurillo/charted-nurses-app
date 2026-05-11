@@ -18,12 +18,12 @@ export default function QuickEntryFAB({
       className={`
         fixed right-5 z-40
         w-14 h-14 rounded-2xl
-        bg-slate-900 text-white
+        bg-gradient-to-br from-brand to-sky-600 text-white
         flex items-center justify-center
-        shadow-lg shadow-slate-900/30
+        shadow-lg shadow-brand/30
         transition-transform duration-100
         active:scale-90
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2
         ${hasBottomNav ? "bottom-20" : "bottom-6"}
       `}
       aria-label={ariaLabel}

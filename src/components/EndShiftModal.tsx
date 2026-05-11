@@ -51,13 +51,13 @@ function CopyButton({ text, label }: { text: string; label?: string }) {
   return (
     <button
       onClick={handleCopy}
-      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${
+      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 min-h-[36px] ${
         copied
-          ? "bg-green-100 text-green-700"
-          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+          ? "bg-accent-new/10 text-accent-new"
+          : "bg-slate-100 dark:bg-slate-700 text-text-secondary hover:bg-slate-200 dark:hover:bg-slate-600"
       }`}
     >
-      {copied ? "✓ Copied" : label ?? "Copy"}
+      {copied ? "\u2713 Copied" : label ?? "Copy"}
     </button>
   );
 }
@@ -131,18 +131,18 @@ export default function EndShiftModal({
   const allRoomsText = fdarRooms
     .map(
       ({ room, fdar }) =>
-        `═══ Room ${room} ═══\n${fdar}`
+        `\u2550\u2550\u2550 Room ${room} \u2550\u2550\u2550\n${fdar}`
     )
     .join("\n\n");
 
-  const headerText = `${formatDate(shiftDate)} — ${shiftType === "day" ? "Day" : "Night"} Shift\n${entries.length} entries across ${rooms.length} room${rooms.length !== 1 ? "s" : ""}\n\n`;
+  const headerText = `${formatDate(shiftDate)} \u2014 ${shiftType === "day" ? "Day" : "Night"} Shift\n${entries.length} entries across ${rooms.length} room${rooms.length !== 1 ? "s" : ""}\n\n`;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-white">
+    <div className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-card">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-safe-top py-4 border-b border-slate-100">
+      <div className="flex items-center justify-between px-5 pt-safe-top py-4 border-b border-slate-200/50">
         <div>
-          <h2 className="text-lg font-bold text-slate-900">
+          <h2 className="text-lg font-extrabold text-text-primary tracking-tight">
             {phase === "confirm"
               ? "End Shift"
               : phase === "compiling"
@@ -152,17 +152,17 @@ export default function EndShiftModal({
               : "Error"}
           </h2>
           {phase === "done" && (
-            <p className="text-xs text-slate-500">
-              {formatDate(shiftDate)} · {shiftType === "day" ? "Day" : "Night"} Shift
+            <p className="text-xs text-text-secondary mt-0.5">
+              {formatDate(shiftDate)} &middot; {shiftType === "day" ? "Day" : "Night"} Shift
             </p>
           )}
         </div>
         <button
           onClick={onClose}
-          className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition text-xl leading-none"
+          className="w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:bg-slate-100 dark:hover:bg-slate-700 transition text-xl leading-none min-w-[48px] min-h-[48px]"
           aria-label="Close"
         >
-          ×
+          &times;
         </button>
       </div>
 
@@ -171,15 +171,15 @@ export default function EndShiftModal({
         {/* Confirm phase */}
         {phase === "confirm" && (
           <div className="px-5 py-8">
-            <div className="bg-slate-50 rounded-2xl p-5 mb-6">
-              <p className="text-sm font-semibold text-slate-700 mb-3">
+            <div className="bg-surface dark:bg-card rounded-2xl p-5 mb-6 border border-slate-200/50 dark:border-slate-700">
+              <p className="text-sm font-semibold text-text-primary mb-3">
                 Shift summary
               </p>
-              <div className="flex gap-4 text-sm text-slate-600">
+              <div className="flex gap-4 text-sm text-text-secondary">
                 <span>{entries.length} entries</span>
-                <span>·</span>
+                <span>&middot;</span>
                 <span>{rooms.length} rooms</span>
-                <span>·</span>
+                <span>&middot;</span>
                 <span>
                   {entries.filter((e) => e.entryType === "voice").length} voice
                 </span>
@@ -188,21 +188,21 @@ export default function EndShiftModal({
                 {rooms.map((r) => (
                   <span
                     key={r}
-                    className="px-2.5 py-1 bg-white rounded-lg text-xs font-semibold text-slate-700 border border-slate-200"
+                    className="px-2.5 py-1 bg-white dark:bg-slate-700 rounded-lg text-xs font-semibold text-text-primary border border-slate-200 dark:border-slate-600"
                   >
                     Room {r} ({entries.filter((e) => e.room === r).length})
                   </span>
                 ))}
               </div>
             </div>
-            <p className="text-sm text-slate-500 mb-6 leading-relaxed">
+            <p className="text-sm text-text-secondary mb-6 leading-relaxed">
               AI will compile your diary entries into FDAR notes for each room.
-              This takes about 5–10 seconds.
+              This takes about 5\u201310 seconds.
             </p>
             <button
               id="compile-fdar-btn"
               onClick={compileNotes}
-              className="w-full py-4 bg-slate-900 text-white rounded-2xl text-base font-semibold hover:bg-slate-800 transition"
+              className="w-full py-4 bg-gradient-to-r from-brand to-sky-600 text-white rounded-2xl text-base font-semibold hover:shadow-lg hover:shadow-brand/30 transition active:scale-[0.98] min-h-[48px]"
             >
               Compile FDAR Notes
             </button>
@@ -212,8 +212,8 @@ export default function EndShiftModal({
         {/* Compiling phase */}
         {phase === "compiling" && (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <div className="w-14 h-14 rounded-full border-4 border-slate-200 border-t-slate-900 animate-spin" />
-            <p className="text-sm text-slate-500">
+            <div className="w-14 h-14 rounded-full border-4 border-slate-200 dark:border-slate-700 border-t-brand animate-spin" />
+            <p className="text-sm text-text-secondary">
               Compiling {rooms.length} room{rooms.length !== 1 ? "s" : ""}...
             </p>
           </div>
@@ -222,31 +222,31 @@ export default function EndShiftModal({
         {/* Error phase */}
         {phase === "error" && (
           <div className="px-5 py-8">
-            <div className="bg-red-50 rounded-2xl p-5 mb-6">
-              <p className="text-sm font-semibold text-red-700 mb-1">
+            <div className="bg-danger/5 rounded-2xl p-5 mb-6 border border-danger/20">
+              <p className="text-sm font-semibold text-danger mb-1">
                 Compilation failed
               </p>
-              <p className="text-sm text-red-600">{errorMsg}</p>
+              <p className="text-sm text-danger/80">{errorMsg}</p>
             </div>
             <button
               onClick={compileNotes}
-              className="w-full py-4 bg-slate-900 text-white rounded-2xl text-base font-semibold hover:bg-slate-800 transition"
+              className="w-full py-4 bg-gradient-to-r from-brand to-sky-600 text-white rounded-2xl text-base font-semibold hover:shadow-lg hover:shadow-brand/30 transition active:scale-[0.98] min-h-[48px]"
             >
               Try Again
             </button>
           </div>
         )}
 
-        {/* Done phase — FDAR notes per room */}
+        {/* Done phase \u2014 FDAR notes per room */}
         {phase === "done" && (
           <div className="px-5 py-5 space-y-4 pb-40">
             {fdarRooms.map(({ room, fdar }) => (
               <div
                 key={room}
-                className="bg-slate-50 rounded-2xl overflow-hidden border border-slate-100"
+                className="bg-surface dark:bg-card rounded-2xl overflow-hidden border border-slate-200/50 dark:border-slate-700"
               >
-                <div className="flex items-center justify-between px-4 py-3 bg-slate-900">
-                  <span className="text-sm font-bold text-white">Room {room}</span>
+                <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-brand/10 to-sky-500/10 dark:from-brand/20 dark:to-sky-500/20">
+                  <span className="text-sm font-bold text-brand">Room {room}</span>
                   <CopyButton text={`Room ${room}\n${fdar}`} />
                 </div>
                 <div className="px-4 py-4 space-y-3">
@@ -254,12 +254,12 @@ export default function EndShiftModal({
                     const [label, ...rest] = line.split(": ");
                     const content = rest.join(": ");
                     const colors: Record<string, string> = {
-                      Focus: "text-amber-700 bg-amber-50 border-amber-200",
-                      Data: "text-blue-700 bg-blue-50 border-blue-200",
-                      Action: "text-green-700 bg-green-50 border-green-200",
-                      Response: "text-purple-700 bg-purple-50 border-purple-200",
+                      Focus: "text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800",
+                      Data: "text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800",
+                      Action: "text-accent-new bg-accent-new/5 border-accent-new/20",
+                      Response: "text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800",
                     };
-                    const colorClass = colors[label] ?? "text-slate-700 bg-white border-slate-200";
+                    const colorClass = colors[label] ?? "text-text-primary bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600";
 
                     if (!content) return null;
                     return (
@@ -283,7 +283,7 @@ export default function EndShiftModal({
 
       {/* Bottom actions for done phase */}
       {phase === "done" && (
-        <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-5 py-4 pb-safe-bottom flex gap-3">
+        <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-card border-t border-slate-200/50 px-5 py-4 pb-safe-bottom flex gap-3">
           <CopyButton
             text={headerText + allRoomsText}
             label="Copy All Rooms"
@@ -291,7 +291,7 @@ export default function EndShiftModal({
           <button
             onClick={handleDone}
             disabled={endingShift}
-            className="flex-1 py-3.5 bg-slate-900 text-white rounded-2xl text-sm font-semibold hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-3.5 bg-gradient-to-r from-brand to-sky-600 text-white rounded-2xl text-sm font-semibold hover:shadow-lg hover:shadow-brand/30 transition disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] min-h-[48px]"
           >
             {endingShift ? "Ending..." : "Done"}
           </button>

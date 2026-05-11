@@ -121,20 +121,20 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
   if (userSettings === undefined) {
     if (!connState.isWebSocketConnected && connState.connectionRetries > 3) {
       return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 p-6">
-          <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-6 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-50 flex items-center justify-center">
-              <svg className="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-surface p-6" style={{ paddingTop: "env(safe-area-inset-top, 0)", paddingBottom: "env(safe-area-inset-bottom, 0)" }}>
+          <div className="max-w-md w-full bg-card rounded-2xl shadow-lg p-6 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-warning/10 flex items-center justify-center">
+              <svg className="w-8 h-8 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
             </div>
-            <h2 className="text-lg font-bold text-slate-900 mb-2">Connection issue</h2>
-            <p className="text-sm text-slate-600 mb-4">
+            <h2 className="text-lg font-bold text-text-primary mb-2">Connection issue</h2>
+            <p className="text-sm text-text-secondary mb-4">
               Unable to reach the server. Please check your internet connection.
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-800 transition"
+              className="px-4 py-2 bg-brand text-white text-sm font-semibold rounded-lg hover:bg-brand/90 transition min-h-[48px]"
             >
               Reload Page
             </button>
@@ -143,12 +143,12 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
       );
     }
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-surface">
         <div className="flex items-center gap-3">
-          <svg className="animate-spin w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24">
+          <svg className="animate-spin w-6 h-6 text-brand" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           </svg>
-          <p className="text-sm text-slate-500">Loading...</p>
+          <p className="text-sm text-text-muted">Loading...</p>
         </div>
       </div>
     );
@@ -156,12 +156,12 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
 
   if (userSettings === null) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-surface">
         <div className="flex items-center gap-3">
-          <svg className="animate-spin w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24">
+          <svg className="animate-spin w-6 h-6 text-brand" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           </svg>
-          <p className="text-sm text-slate-500">Loading...</p>
+          <p className="text-sm text-text-muted">Loading...</p>
         </div>
       </div>
     );
@@ -268,24 +268,32 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <AppProvider value={contextValue}>
-      <div className="flex flex-col h-screen bg-slate-50 font-sans overflow-hidden">
-        {/* Header — only on rooms tab */}
+      <div
+        className="flex flex-col h-screen bg-surface font-sans overflow-hidden"
+        style={{
+          paddingTop: "env(safe-area-inset-top, 0)",
+          paddingBottom: "env(safe-area-inset-bottom, 0)",
+          paddingLeft: "env(safe-area-inset-left, 0)",
+          paddingRight: "env(safe-area-inset-right, 0)",
+        }}
+      >
+        {/* Header -- only on rooms tab */}
         {isRoomsPage && (
-          <header className="bg-white border-b border-slate-100 pt-safe-top shrink-0">
+          <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shrink-0">
             <div className="flex items-center justify-between px-5 py-4">
               <div className="flex items-center gap-3">
                 <Image src="/logo.png" alt="Charted Logo" width={32} height={32} className="rounded-md shadow-sm" />
                 <div>
-                  <h1 className="text-lg font-bold text-slate-900 tracking-tight leading-none mb-1">
+                  <h1 className="text-lg font-extrabold text-text-primary tracking-tight leading-none mb-1">
                     Charted
                   </h1>
-                  <p className="text-xs font-medium text-slate-500 leading-none">
+                  <p className="text-xs font-medium text-text-secondary leading-none">
                     {new Date(shiftDate + "T12:00:00").toLocaleDateString("en-US", {
                       weekday: "short",
                       month: "short",
                       day: "numeric",
                     })}{" "}
-                    · {shiftLabel}
+                    &middot; {shiftLabel}
                   </p>
                 </div>
               </div>
@@ -293,15 +301,16 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
                 {entries && entries.length > 0 && (
                   <button
                     onClick={() => setShowEndShift(true)}
-                    className="px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-md hover:bg-slate-800 transition"
+                    className="px-3 py-1.5 bg-brand text-white text-xs font-semibold rounded-md hover:bg-brand/90 transition min-h-[40px]"
                   >
                     End Shift
                   </button>
                 )}
                 <button
                   onClick={() => signOut()}
-                  className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200 transition"
+                  className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 text-text-secondary flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-600 transition"
                   title="Sign out"
+                  aria-label="Sign out"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -312,23 +321,27 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
           </header>
         )}
 
-        {/* Page content */}
-        <div className={`flex-1 overflow-y-auto ${isRoomsPage ? "" : "pb-16"}`}>
+        {/* Page content with smooth transitions */}
+        <div
+          key={pathname}
+          className={`flex-1 overflow-y-auto animate-in fade-in duration-200 ${isRoomsPage ? "" : "pb-16"}`}
+        >
           {children}
         </div>
 
         {/* Error Banner */}
         {errorMessage && (
-          <div className="fixed top-16 left-4 right-4 z-50 bg-red-50 border border-red-200 rounded-xl px-4 py-3 shadow-lg flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-            <svg className="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="fixed top-16 left-4 right-4 z-50 bg-danger/5 border border-danger/20 rounded-xl px-4 py-3 shadow-lg flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+            <svg className="w-5 h-5 text-danger shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p className="text-sm text-red-700 flex-1">{errorMessage}</p>
+            <p className="text-sm text-danger/90 flex-1">{errorMessage}</p>
             <button
               onClick={() => setErrorMessage(null)}
-              className="text-red-400 hover:text-red-600 shrink-0"
+              className="text-danger/50 hover:text-danger/80 shrink-0 min-w-[48px] min-h-[48px] flex items-center justify-center"
+              aria-label="Dismiss error"
             >
-              ✕
+              &times;
             </button>
           </div>
         )}
@@ -363,7 +376,7 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
           <div className="fixed inset-0 z-[60] flex items-end" onClick={() => setShowTemplatePopup(false)}>
             <div className="absolute inset-0 bg-black/30 animate-in fade-in" />
             <div
-              className="relative w-full bg-white rounded-t-2xl shadow-xl animate-in slide-in-from-bottom max-h-[70vh] flex flex-col"
+              className="relative w-full bg-white dark:bg-card rounded-t-2xl shadow-xl animate-in slide-in-from-bottom max-h-[70vh] flex flex-col"
               onClick={(e) => e.stopPropagation()}
               role="dialog"
               aria-label="Template search"
@@ -426,12 +439,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (user === undefined) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-surface">
         <div className="flex items-center gap-3">
-          <svg className="animate-spin w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24">
+          <svg className="animate-spin w-6 h-6 text-brand" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           </svg>
-          <p className="text-sm text-slate-500">Loading...</p>
+          <p className="text-sm text-text-muted">Loading...</p>
         </div>
       </div>
     );

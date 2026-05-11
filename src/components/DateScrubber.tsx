@@ -33,7 +33,7 @@ export default function DateScrubber({
     }
   }, [activeShift]);
   return (
-    <div className="shrink-0 bg-white border-b border-slate-100">
+    <div className="shrink-0 bg-white dark:bg-card border-b border-slate-200/50">
       {/* Shift selector */}
       <div
         ref={scrollRef}
@@ -53,10 +53,10 @@ export default function DateScrubber({
               role="tab"
               aria-selected={isActive}
               onClick={() => onShiftChange(shift)}
-              className={`flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold transition-all min-h-[40px] ${
+              className={`flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold transition-all min-h-[48px] ${
                 isActive
-                  ? "bg-slate-900 text-white shadow-sm"
-                  : "bg-slate-50 text-slate-500 hover:bg-slate-100 border border-slate-200"
+                  ? "bg-brand text-white shadow-sm shadow-brand/30 active:scale-90"
+                  : "bg-surface text-text-secondary hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-600"
               }`}
             >
               <span className="block leading-tight">
@@ -72,9 +72,9 @@ export default function DateScrubber({
 
       {/* Time axis indicator */}
       <div className="px-5 pb-2">
-        <div className="relative h-1 bg-slate-100 rounded-full overflow-hidden">
+        <div className="relative h-1 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
           <div
-            className="absolute left-0 top-0 h-full bg-slate-900 rounded-full transition-all duration-300"
+            className="absolute left-0 top-0 h-full bg-brand rounded-full transition-all duration-300"
             style={{
               width: activeShift
                 ? `${getProgressPercent(activeShift.shiftDate, activeShift.shiftType)}%`
@@ -82,7 +82,7 @@ export default function DateScrubber({
             }}
           />
         </div>
-        <div className="flex justify-between mt-1 text-[10px] text-slate-400 font-medium">
+        <div className="flex justify-between mt-1 text-[10px] text-text-muted font-medium">
           <span>07:00</span>
           <span>11:00</span>
           <span>15:00</span>
