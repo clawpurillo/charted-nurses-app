@@ -288,33 +288,41 @@ export default function LandingPage() {
             <form onSubmit={handleSubmit} className="space-y-3">
               {isSignUp && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-1">Name</label>
+                  <label htmlFor="auth-name" className="block text-sm font-medium text-slate-600 mb-1">Name</label>
                   <input
+                    id="auth-name"
+                    name="name"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Your name"
                     className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
                     required={isSignUp}
+                    aria-label="Name"
                   />
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">Email</label>
+                <label htmlFor="auth-email" className="block text-sm font-medium text-slate-600 mb-1">Email</label>
                 <input
+                  id="auth-email"
+                  name="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="nurse@hospital.com"
                   className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
                   required
+                  aria-label="Email"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">Password</label>
+                <label htmlFor="auth-password" className="block text-sm font-medium text-slate-600 mb-1">Password</label>
                 <input
+                  id="auth-password"
+                  name="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -322,6 +330,7 @@ export default function LandingPage() {
                   className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
                   minLength={8}
                   required
+                  aria-label="Password"
                 />
               </div>
 
