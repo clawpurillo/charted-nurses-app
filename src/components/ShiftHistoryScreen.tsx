@@ -264,8 +264,17 @@ export default function ShiftHistoryScreen({
     shiftType: "day" | "night";
   } | null>(null);
 
-  // Loading state
-  if (pastShifts === undefined) {
+  // Guard against infinite loading: if the query stays undefined for >8s,
+  // treat it as a hard failure and show the empty state instead of spinning forever.
+  const [queryTimedOut, setQueryTimedOut] = useState(false);
+  useEffect(() => {
+    if (pastShifts !== undefined) return; // resolved, no timeout needed
+    const timer = setTimeout(() => setQueryTimedOut(true), 8000);
+    return () => clearTimeout(timer);
+  }, [pastShifts]);
+
+  // Loading state (only show spinner during normal loading window)
+  if (pastShifts === undefined && !queryTimedOut) {
     return (
       <div className="flex flex-col h-screen bg-slate-50 font-sans overflow-hidden">
         <header className="bg-white border-b border-slate-100 pt-safe-top shrink-0">
@@ -289,7 +298,60 @@ export default function ShiftHistoryScreen({
     );
   }
 
-  const shifts = pastShifts as PastShift[];
+  const shifts = (pastShifts ?? []) as PastShift[];
+
+  // Timed-out state: query took too long, show actionable error
+  if (queryTimedOut) {
+    return (
+      <div className="flex flex-col h-screen bg-slate-50 font-sans overflow-hidden">
+        <header className="bg-white border-b border-slate-100 pt-safe-top shrink-0">
+          <div className="flex items-center gap-4 px-5 py-4">
+            <button
+              onClick={onBack}
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-slate-100 transition min-h-[48px] min-w-[48px]"
+              aria-label="Back to dashboard"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+            <div>
+              <h1 className="text-lg font-bold text-slate-900 tracking-tight leading-none mb-0.5">
+                Shift History
+              </h1>
+              <p className="text-xs text-red-500 font-medium">Load timed out</p>
+            </div>
+          </div>
+        </header>
+        <div className="flex-1 flex flex-col items-center justify-center px-5 text-center">
+          <p className="text-4xl mb-4">⚠️</p>
+          <h2 className="text-lg font-bold text-slate-700 mb-1">
+            Unable to load history
+          </h2>
+          <p className="text-sm text-slate-400 max-w-xs mb-4">
+            The server took too long to respond. Try pulling down to refresh or
+            check your connection.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-800 transition"
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen bg-slate-50 font-sans overflow-hidden">
