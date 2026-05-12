@@ -250,7 +250,7 @@ export default function HoldToTalk({
                 ? "bg-green-500 text-white"
                 : state === "error"
                   ? "bg-red-100 dark:bg-red-900/30 text-red-500 dark:text-red-400"
-                  : "bg-slate-900 dark:bg-brand text-white hover:bg-slate-800 dark:hover:bg-brand/90 active:scale-95"
+                  : "bg-gradient-to-br from-brand to-sky-600 text-white hover:opacity-90 active:scale-95"
           }
         `}
       >

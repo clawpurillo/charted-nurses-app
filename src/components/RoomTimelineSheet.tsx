@@ -228,7 +228,7 @@ export default function RoomTimelineSheet({
                       <div className={`flex-1 bg-slate-50 border border-slate-100 rounded-2xl p-3 shadow-sm relative group-hover:border-slate-200 transition-colors border-l-4 ${classes.border}`}>
                         <div className="flex items-center justify-between mb-1">
                           <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 bg-slate-900 text-white rounded-md text-xs font-bold">
+                            <span className="px-2 py-0.5 bg-brand/10 text-brand rounded-md text-xs font-bold">
                               {entry.room}
                             </span>
                             {entry.fdarCategory && (
