@@ -60,6 +60,7 @@
 :root {
   /* Clinical Calm design tokens */
   --brand: #0EA5E9;
+  --brand-text: #0369A1; /* sky-700: 4.83:1 on white — WCAG AA compliant */
   --brand-soft: #F0F9FF;
   --accent-new: #10B981;
   --warning: #F59E0B;
@@ -107,6 +108,7 @@
 .dark {
   /* Clinical Calm design tokens — dark mode */
   --brand: #0EA5E9;
+  --brand-text: #38BDF8; /* sky-400: safe contrast on dark backgrounds */
   --brand-soft: #082F49;
   --accent-new: #10B981;
   --warning: #F59E0B;
@@ -163,6 +165,10 @@
 }
 
 @layer utilities {
+  /* WCAG AA: text-brand uses accessible color, bg-brand/border-brand keep original --brand */
+  .text-brand {
+    color: var(--brand-text);
+  }
   .pt-safe-top {
     padding-top: env(safe-area-inset-top);
   }
@@ -176,6 +182,13 @@
     display: none;
   }
   .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }

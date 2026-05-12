@@ -301,14 +301,14 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
                 {entries && entries.length > 0 && (
                   <button
                     onClick={() => setShowEndShift(true)}
-                    className="px-3 py-1.5 bg-brand text-white text-xs font-semibold rounded-md hover:bg-brand/90 transition min-h-[40px]"
+                    className="px-3 py-1.5 bg-brand text-white text-xs font-semibold rounded-md hover:bg-brand/90 transition min-h-[48px]"
                   >
                     End Shift
                   </button>
                 )}
                 <button
                   onClick={() => signOut()}
-                  className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 text-text-secondary flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-600 transition"
+                  className="min-w-[48px] min-h-[48px] rounded-full bg-slate-100 dark:bg-slate-700 text-text-secondary flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-600 transition"
                   title="Sign out"
                   aria-label="Sign out"
                 >

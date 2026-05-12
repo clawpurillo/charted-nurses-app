@@ -172,7 +172,7 @@ export default function QuickEntrySheet({
           <div className="w-10 h-1 rounded-full bg-slate-300 mx-auto" />
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200 transition"
+            className="min-w-[48px] min-h-[48px] rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200 transition"
             aria-label="Close quick entry"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -136,7 +136,7 @@ export default function EntryFeed({
                 role="tab"
                 aria-selected={isActive}
                 onClick={() => handleShiftChange(shift)}
-                className={`flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold transition-all min-h-[40px] ${
+                className={`flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold transition-all min-h-[48px] min-w-[48px] ${
                   isActive
                     ? "bg-slate-900 text-white shadow-sm"
                     : "bg-slate-50 text-slate-500 hover:bg-slate-100 border border-slate-200"
