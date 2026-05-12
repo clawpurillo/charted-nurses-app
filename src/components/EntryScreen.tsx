@@ -15,6 +15,7 @@ export default function EntryScreen() {
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [successVisible, setSuccessVisible] = useState(false);
   const [textInput, setTextInput] = useState("");
   const [activeRoom, setActiveRoom] = useState<string | null>(null);
   const [showTemplatePopup, setShowTemplatePopup] = useState(false);
@@ -33,11 +34,16 @@ export default function EntryScreen() {
   // Clear messages after 3 seconds
   useEffect(() => {
     if (!errorMessage && !successMessage) return;
-    const timer = setTimeout(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    if (successMessage) {
+      // Start fade-out at 2.5s, clear at 3s
+      timers.push(setTimeout(() => setSuccessVisible(false), 2500));
+    }
+    timers.push(setTimeout(() => {
       setErrorMessage(null);
       setSuccessMessage(null);
-    }, 3000);
-    return () => clearTimeout(timer);
+    }, 3000));
+    return () => timers.forEach(clearTimeout);
   }, [errorMessage, successMessage]);
 
   // Handle template insertion
@@ -81,6 +87,7 @@ export default function EntryScreen() {
       setTextInput("");
       setErrorMessage(null);
       setSuccessMessage("Entry added");
+      setSuccessVisible(true);
     } catch (err: unknown) {
       setErrorMessage((err as Error).message || "Failed to add entry");
     }
@@ -99,6 +106,7 @@ export default function EntryScreen() {
       });
       setErrorMessage(null);
       setSuccessMessage("Voice entry added");
+      setSuccessVisible(true);
     } catch (err: unknown) {
       setErrorMessage((err as Error).message || "Failed to add voice entry");
     }
@@ -156,11 +164,17 @@ export default function EntryScreen() {
           </div>
         )}
         {successMessage && (
-          <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 flex items-start gap-3 animate-in fade-in">
-            <svg className="w-5 h-5 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            <p className="text-sm text-green-700 flex-1">{successMessage}</p>
+          <div className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-green-500 text-white rounded-xl shadow-lg px-5 py-3 transition-all duration-300 ${
+            successVisible
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-2"
+          }`}>
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <p className="text-sm font-medium">{successMessage}</p>
+            </div>
           </div>
         )}
 

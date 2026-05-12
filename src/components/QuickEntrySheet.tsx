@@ -169,7 +169,7 @@ export default function QuickEntrySheet({
       >
         {/* Sheet header / drag handle */}
         <div className="flex items-center justify-between px-5 pt-3 pb-2 border-b border-slate-100">
-          <div className="w-10 h-1 rounded-full bg-slate-300 mx-auto" />
+          <div className="w-10 h-1 rounded-full bg-brand/40 mx-auto" />
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200 transition"
@@ -254,7 +254,7 @@ export default function QuickEntrySheet({
               <button
                 onClick={handleSubmitText}
                 disabled={!textInput.trim() || !workingRoom}
-                className="w-full py-3 bg-slate-900 text-white font-semibold text-sm rounded-xl hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition min-h-[48px]"
+                className="w-full py-3 bg-brand text-white font-semibold text-sm rounded-xl hover:bg-brand/90 disabled:opacity-50 disabled:cursor-not-allowed transition min-h-[48px]"
               >
                 Add Entry
               </button>

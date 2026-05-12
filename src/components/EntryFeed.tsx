@@ -138,7 +138,7 @@ export default function EntryFeed({
                 onClick={() => handleShiftChange(shift)}
                 className={`flex-shrink-0 px-3 py-2 rounded-xl text-xs font-semibold transition-all min-h-[40px] ${
                   isActive
-                    ? "bg-slate-900 text-white shadow-sm"
+                    ? "bg-brand text-white shadow-sm"
                     : "bg-slate-50 text-slate-500 hover:bg-slate-100 border border-slate-200"
                 }`}
               >
@@ -186,7 +186,7 @@ export default function EntryFeed({
 
               {/* Timeline line */}
               <div className="relative">
-                <div className="absolute left-[11px] top-4 bottom-4 w-px bg-slate-200" />
+                <div className="absolute left-[11px] top-4 bottom-4 w-px bg-gradient-to-b from-brand/30 via-brand/20 to-brand/5" />
 
                 <div className="space-y-4 relative">
                   {group.entries
