@@ -197,14 +197,14 @@ export default function HoldToTalk({
       {/* Status text */}
       <p
         className={`text-sm font-medium transition-all duration-200 ${state === "error"
-            ? "text-red-500"
+            ? "text-red-500 dark:text-red-400"
             : state === "done"
-              ? "text-green-600"
+              ? "text-green-600 dark:text-green-400"
               : state === "recording"
-                ? "text-blue-600"
+                ? "text-blue-600 dark:text-blue-400"
                 : limitReached
-                  ? "text-amber-600"
-                  : "text-slate-400"
+                  ? "text-amber-600 dark:text-amber-400"
+                  : "text-slate-400 dark:text-slate-500"
           }`}
       >
         {statusText || idleText}
@@ -212,7 +212,7 @@ export default function HoldToTalk({
 
       {/* Error detail (sub-text below status) */}
       {errorDetail && (
-        <p className="text-xs text-slate-500 text-center max-w-[200px]">
+        <p className="text-xs text-slate-500 dark:text-slate-400 text-center max-w-[200px]">
           {errorDetail}
         </p>
       )}
@@ -242,15 +242,15 @@ export default function HoldToTalk({
           transition-all duration-150 touch-none
           ${isButtonDisabled && !isActive
             ? limitReached
-              ? "bg-amber-100 text-amber-400 cursor-not-allowed"
-              : "bg-slate-100 text-slate-300 cursor-not-allowed"
+              ? "bg-amber-100 dark:bg-amber-900/30 text-amber-400 dark:text-amber-500 cursor-not-allowed"
+              : "bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-600 cursor-not-allowed"
             : isActive
-              ? "bg-red-500 text-white scale-110 shadow-lg shadow-red-200"
+              ? "bg-red-500 text-white scale-110 shadow-lg shadow-red-200 dark:shadow-red-900/50"
               : state === "done"
                 ? "bg-green-500 text-white"
                 : state === "error"
-                  ? "bg-red-100 text-red-500"
-                  : "bg-slate-900 text-white hover:bg-slate-800 active:scale-95"
+                  ? "bg-red-100 dark:bg-red-900/30 text-red-500 dark:text-red-400"
+                  : "bg-slate-900 dark:bg-brand text-white hover:bg-slate-800 dark:hover:bg-brand/90 active:scale-95"
           }
         `}
       >

@@ -279,7 +279,7 @@ function AppLayoutInner({ children }: { children: React.ReactNode }) {
       >
         {/* Header -- only on rooms tab */}
         {isRoomsPage && (
-          <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shrink-0">
+          <header className="bg-white/80 dark:bg-surface/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 shrink-0">
             <div className="flex items-center justify-between px-5 py-4">
               <div className="flex items-center gap-3">
                 <Image src="/logo.png" alt="Charted Logo" width={32} height={32} className="rounded-md shadow-sm" />

@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
+import StatusBadge from "./StatusBadge";
+import type { StatusBadgeStatus } from "./StatusBadge";
 
 export type RoomStatus = "ok" | "warning" | "critical" | "neutral";
 
@@ -26,6 +28,14 @@ export interface RoomCardData {
   status: RoomStatus;
   lastEntryLabel: string;
 }
+
+// Map RoomGrid statuses to StatusBadge statuses
+const ROOM_TO_BADGE_STATUS: Record<RoomStatus, StatusBadgeStatus> = {
+  critical: "busy",
+  warning: "idle",
+  ok: "available",
+  neutral: "unknown",
+};
 
 const STATUS_CONFIG: Record<RoomStatus, { label: string; color: string; border: string; dot: string }> = {
   critical: { label: "Needs attention", color: "text-red-700 dark:text-red-400", border: "border-l-red-500", dot: "bg-red-400" },
@@ -112,11 +122,8 @@ export default function RoomGrid({ rooms, activeRoom, onSelectRoom, onAddRoom }:
                 {room.room}
               </div>
               <div className="mt-2 flex items-center gap-2">
-                {/* Status badge: colored LEFT border + icon dot, no colored background */}
-                <span className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold uppercase tracking-wider bg-slate-50 dark:bg-slate-700/50 ${config.color}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} aria-hidden="true" />
-                  {config.label}
-                </span>
+                {/* Status badge */}
+                <StatusBadge status={ROOM_TO_BADGE_STATUS[room.status]} label={config.label} size="sm" />
               </div>
 
               {/* Sparkline */}

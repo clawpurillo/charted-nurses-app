@@ -214,20 +214,20 @@ export function getStatusClasses(status: "ok" | "warning" | "critical"): {
       return {
         border: "border-l-red-500",
         dot: "bg-red-500",
-        badge: "bg-red-50 text-red-700",
+        badge: "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300",
       };
     case "warning":
       return {
         border: "border-l-yellow-500",
         dot: "bg-yellow-500",
-        badge: "bg-yellow-50 text-yellow-700",
+        badge: "bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300",
       };
     case "ok":
     default:
       return {
         border: "border-l-slate-300",
         dot: "bg-slate-400",
-        badge: "bg-slate-50 text-slate-600",
+        badge: "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300",
       };
   }
 }
