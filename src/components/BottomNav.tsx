@@ -82,7 +82,7 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
 
   return (
     <nav
-      className="h-16 bg-white/80 backdrop-blur-xl border-t border-slate-200/50 flex items-stretch shrink-0 z-50 pb-safe-bottom"
+      className="h-16 bg-white/80 dark:bg-surface/80 backdrop-blur-xl border-t border-slate-200/50 dark:border-slate-700/50 flex items-stretch shrink-0 z-50 pb-safe-bottom"
       role="tablist"
       aria-label="Main navigation"
     >
@@ -102,7 +102,7 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               text-xs font-semibold transition-all duration-200 ease-out
               min-h-12 min-w-12 relative
               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-inset
-              ${isActive ? "text-brand" : "text-slate-400"}
+              ${isActive ? "text-brand" : "text-slate-400 dark:text-slate-500"}
               active:scale-90
             `}
           >

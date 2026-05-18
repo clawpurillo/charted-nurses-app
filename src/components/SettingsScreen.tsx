@@ -436,7 +436,7 @@ export default function SettingsScreen({ onNavigate }: SettingsScreenProps) {
                         setEditingTemplate(t);
                         setShowEditor(true);
                       }}
-                      className="w-9 h-9 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                      className="min-w-[48px] min-h-[48px] rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-slate-100 dark:hover:bg-slate-700 transition"
                       aria-label={`Edit ${t.name}`}
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -445,7 +445,7 @@ export default function SettingsScreen({ onNavigate }: SettingsScreenProps) {
                     </button>
                     <button
                       onClick={() => setDeletingTemplate(t)}
-                      className="w-9 h-9 rounded-lg flex items-center justify-center text-text-muted hover:text-danger hover:bg-danger/5 transition"
+                      className="min-w-[48px] min-h-[48px] rounded-lg flex items-center justify-center text-text-muted hover:text-danger hover:bg-danger/5 transition"
                       aria-label={`Delete ${t.name}`}
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
