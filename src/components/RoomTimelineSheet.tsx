@@ -153,7 +153,7 @@ export default function RoomTimelineSheet({
     >
       <div
         ref={sheetRef}
-        className="absolute bottom-0 left-0 right-0 max-w-lg mx-auto bg-white rounded-t-3xl shadow-2xl transition-transform duration-200 ease-out will-change-transform flex flex-col"
+        className="absolute bottom-0 left-0 right-0 max-w-lg mx-auto bg-white dark:bg-surface rounded-t-3xl shadow-2xl transition-transform duration-200 ease-out will-change-transform flex flex-col"
         style={{ maxHeight: "85vh" }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -164,25 +164,25 @@ export default function RoomTimelineSheet({
           data-drag-handle
           className="flex items-center justify-center py-3 cursor-grab active:cursor-grabbing shrink-0"
         >
-          <div className="w-10 h-1 rounded-full bg-slate-300" />
+          <div className="w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
         </div>
 
         {/* Header */}
-        <div className="px-5 pb-3 border-b border-slate-100 shrink-0">
+        <div className="px-5 pb-3 border-b border-slate-100 dark:border-slate-700 shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                 Room {room}
               </h2>
               {shiftDisplayLabel && (
-                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                   {shiftDisplayLabel} · {roomEntries.length} {roomEntries.length === 1 ? "entry" : "entries"}
                 </p>
               )}
             </div>
             <button
               onClick={handleClose}
-              className="w-12 h-12 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+              className="w-12 h-12 rounded-xl flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
               aria-label="Close timeline"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,7 +202,7 @@ export default function RoomTimelineSheet({
         {/* Timeline content */}
         <div className="overflow-y-auto px-5 py-4 flex-1" style={{ minHeight: 0 }}>
           {roomEntries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-10 text-slate-400">
+            <div className="flex flex-col items-center justify-center py-10 text-slate-400 dark:text-slate-500">
               <p className="text-2xl mb-2">📋</p>
               <p className="text-sm text-center">
                 No entries for this shift{activeShift ? ` · ${shiftDisplayLabel}` : ""}
@@ -211,7 +211,7 @@ export default function RoomTimelineSheet({
           ) : (
             <div className="relative">
               {/* Timeline line */}
-              <div className="absolute left-[11px] top-4 bottom-4 w-px bg-slate-200" />
+              <div className="absolute left-[11px] top-4 bottom-4 w-px bg-gradient-to-b from-brand/30 via-brand/20 to-brand/5" />
 
               <div className="space-y-4 relative">
                 {roomEntries.map((entry) => {
@@ -221,22 +221,22 @@ export default function RoomTimelineSheet({
                     <div key={entry._id} className="relative flex gap-3 group">
                       {/* Timeline dot */}
                       <div className="relative z-10 w-6 flex justify-center shrink-0 pt-2">
-                        <div className={`w-2 h-2 rounded-full ring-4 ring-white ${classes.dot}`} />
+                        <div className={`w-2 h-2 rounded-full ring-4 ring-white dark:ring-slate-800 ${classes.dot}`} />
                       </div>
 
                       {/* Entry Card */}
-                      <div className={`flex-1 bg-slate-50 border border-slate-100 rounded-2xl p-3 shadow-sm relative group-hover:border-slate-200 transition-colors border-l-4 ${classes.border}`}>
+                      <div className={`flex-1 bg-slate-50 dark:bg-card-new border border-slate-100 dark:border-slate-700 rounded-2xl p-3 shadow-sm relative group-hover:border-slate-200 dark:group-hover:border-slate-600 transition-colors border-l-4 ${classes.border}`}>
                         <div className="flex items-center justify-between mb-1">
                           <div className="flex items-center gap-2">
-                            <span className="px-2 py-0.5 bg-brand/10 text-brand rounded-md text-xs font-bold">
+                            <span className="px-2 py-0.5 bg-slate-900 dark:bg-brand text-white rounded-md text-xs font-bold">
                               {entry.room}
                             </span>
                             {entry.fdarCategory && (
                               <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider ${
-                                entry.fdarCategory === "focus" ? "bg-blue-50 text-blue-700" :
-                                entry.fdarCategory === "data" ? "bg-green-50 text-green-700" :
-                                entry.fdarCategory === "action" ? "bg-yellow-50 text-yellow-700" :
-                                "bg-purple-50 text-purple-700"
+                                entry.fdarCategory === "focus" ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300" :
+                                entry.fdarCategory === "data" ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300" :
+                                entry.fdarCategory === "action" ? "bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300" :
+                                "bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300"
                               }`}>
                                 {entry.fdarCategory}
                               </span>
@@ -245,7 +245,7 @@ export default function RoomTimelineSheet({
                               <span className="text-xs text-blue-500">🎤</span>
                             )}
                           </div>
-                          <span className="text-xs font-medium text-slate-400">
+                          <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
                             {new Date(entry.timestamp).toLocaleTimeString("en-US", {
                               hour: "numeric",
                               minute: "2-digit",
@@ -253,7 +253,7 @@ export default function RoomTimelineSheet({
                             })}
                           </span>
                         </div>
-                        <p className="text-sm text-slate-700 leading-relaxed pr-6">
+                        <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed pr-6">
                           {entry.description}
                         </p>
 
@@ -264,7 +264,7 @@ export default function RoomTimelineSheet({
                               await onDeleteEntry(entry._id);
                             }
                           }}
-                          className="absolute right-2 bottom-2 p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition opacity-0 group-hover:opacity-100"
+                          className="absolute right-2 bottom-2 p-2 text-slate-300 dark:text-slate-600 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition opacity-0 group-hover:opacity-100"
                           aria-label="Delete entry"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
